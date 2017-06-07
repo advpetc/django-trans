@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="homepage">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>翻译表</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        var _hmt = _hmt || [];
+    </script>
+
+</head>
+<body class="home-template" data-gr-c-s-loaded="true">
+<header class="site-header">
+    <nav class="navbar" id="top"></nav>
+    <div class="container jumbotron">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>翻译表</h1>
+                <p><strong>输入翻译文字</strong>
+                </p>
+                <form class="search-wraper" role="search">
+                    <div class="form-group">
+                        <!--<input class="form-control search clearable" placeholder="搜索文字，例如：jquery" autocomplete="off" value="{{ search_item}}">-->
+                        <textarea id="trans_item" class="form-control" rows="3" cols="20" placeholder="搜索翻译文字，例如：what is jquery?" required>{{ TransResult.trans_source}}</textarea>
+                        <i class="fa x fa-search onX"></i>
+                    </div>
+                    <button type="button" class="btn btn-lg btn-primary" id="translate_button">Translate</button>
+                    <div class="pull-right">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        源语言 <span class="caret"></span>
+                    </button>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-header">源语言</li>
+                                <li><a href="#">英文</a></li>
+                                <li><a href="#">Another action</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#">Separated link</a></li>
+                            </ul>
+                    </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                目标语言 <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-header">目标语言</li>
+                                <li><a href="#">中文</a></li>
+                                <li><a href="#">Another action</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#">Separated link</a></li>
+                            </ul>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                类别 <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-header">类别</li>
+                                <li><a href="#">医药</a></li>
+                                <li><a href="#">科技</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#">Separated link</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="mostused-keywords well well-sm text-center hidden-xs hidden-sm">
+        <ul class="list-inline">
+            <li>some default keywords as divider</li>
+        </ul>
+    </div>
+</header>
+<main class="packages-list-container" id="all-trans">
+    <div class="container">
+        <!--<div class="list-group packages" id="common-packages" style="display:block;">-->
+            <!--<a href="/polls/{{ atman }}" class="t1 list-group-item" target="_blank" onclick="_hmt.push(['_trackEvent', 'packages', 'click', 'bootstrap'])">-->
+                <!--&lt;!&ndash;http://translate.atman360.com/&ndash;&gt;-->
+                <!--<div class="row">-->
+                    <!--<div class="col-md-3" id="source1">-->
+                        <!--<h4>{{ TransResult.trans_output}}</h4>-->
+                        <!--<h5 class="package-name">atman</h5>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</a>-->
+             <!--<a href="/polls/{{  google}}" class="t1 list-group-item" target="_blank" onclick="_hmt.push(['_trackEvent', 'packages', 'click', 'bootstrap'])">-->
+                <!--&lt;!&ndash;http://translate.google.com/&ndash;&gt;-->
+                 <!--<div class="row">-->
+                    <!--<div class="col-md-3" id="source2">-->
+                        <!--<h4>{{ TransResult.trans_output}}</h4>-->
+                        <!--<h5 class="package-name">google</h5>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</a>-->
+             <!--<a href="/polls/{{  baidu}}" class="t1 list-group-item" target="_blank" onclick="_hmt.push(['_trackEvent', 'packages', 'click', 'bootstrap'])">-->
+                <!--&lt;!&ndash;http://translate.baidu.com/&ndash;&gt;-->
+                 <!--<div class="row">-->
+                    <!--<div class="col-md-3" id="source3">-->
+                        <!--<h4>{{ TransResult.trans_output}}</h4>-->
+                        <!--<h5 class="package-name">baidu</h5>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</a>-->
+             <!--<a href="/polls/{{  bing}}" class="t1 list-group-item" target="_blank" onclick="_hmt.push(['_trackEvent', 'packages', 'click', 'bootstrap'])">-->
+                <!--&lt;!&ndash;http://translate.bing.com/&ndash;&gt;-->
+                 <!--<div class="row">-->
+                    <!--<div class="col-md-3" id="source4">-->
+                        <!--<h4>{{ TransResult.trans_output}}</h4>-->
+                        <!--<h5 class="package-name">bing</h5>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</a>-->
+            <!--<a href="http://fanyi.youdao.com/" class="t1 list-group-item" target="_blank" onclick="_hmt.push(['_trackEvent', 'packages', 'click', 'bootstrap'])">-->
+                <!--<div class="row">-->
+                    <!--<div class="col-md-3" id="source5">-->
+                        <!--<h4>{{ TransResult.trans_output}}</h4>-->
+                        <!--<h5 class="package-name">youdao</h5>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</a>-->
+            <!--<a href="http://fanyi.sogou.com/" class="t1 list-group-item" target="_blank" onclick="_hmt.push(['_trackEvent', 'packages', 'click', 'bootstrap'])">-->
+                <!--<div class="row">-->
+                    <!--<div class="col-md-3" id="source6">-->
+                        <!--<h4>atasfd</h4>-->
+                        <!--<h5 class="package-name">sogo</h5>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</a>-->
+            <!--<a href="http://fanyi.niutrans.com/" class="t1 list-group-item" target="_blank" onclick="_hmt.push(['_trackEvent', 'packages', 'click', 'bootstrap'])">-->
+                <!--<div class="row">-->
+                    <!--<div class="col-md-3" id="source7">-->
+                        <!--<h4>atasfd</h4>-->
+                        <!--<h5 class="package-name">xiaoniu</h5>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</a>-->
+            <!--<a href="http://www.yeecloud.com/index" class="t1 list-group-item" target="_blank" onclick="_hmt.push(['_trackEvent', 'packages', 'click', 'bootstrap'])">-->
+                <!--<div class="row">-->
+                    <!--<div class="col-md-3" id="source8">-->
+                        <!--<h4>atasfd</h4>-->
+                        <!--<h5 class="package-name">yiyun</h5>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</a>-->
+            <!--<a href="http://fanyi.youdao.com/" class="t1 list-group-item" target="_blank" onclick="_hmt.push(['_trackEvent', 'packages', 'click', 'bootstrap'])">-->
+                <!--<div class="row">-->
+                    <!--<div class="col-md-3" id="source9">-->
+                        <!--<h4>atasfd</h4>-->
+                        <!--<h5 class="package-name">译库*</h5>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</a>-->
+            <!--<a href="http://www.sesametranslate.com/" class="t1 list-group-item" target="_blank" onclick="_hmt.push(['_trackEvent', 'packages', 'click', 'bootstrap'])">-->
+                <!--<div class="row">-->
+                    <!--<div class="col-md-3" id="source10">-->
+                        <!--<h4>atasfd</h4>-->
+                        <!--<h5 class="package-name">云汇译</h5>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</a>-->
+            <!--<a href="http://fanyi.youdao.com/" class="t1 list-group-item" target="_blank" onclick="_hmt.push(['_trackEvent', 'packages', 'click', 'bootstrap'])">-->
+                <!--<div class="row">-->
+                    <!--<div class="col-md-3" id="source11">-->
+                        <!--<h4>atasfd</h4>-->
+                        <!--<h5 class="package-name">MORE*</h5>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</a>-->
+        <!--</div>-->
+        {% if latest_trans_list %}
+        <ul class="list-group packages" id="common-packages" style="display:block;">
+        {% for tran in latest_trans_list %}
+            <a href="/polls/{{ tran.id }}/" class="t1 list-group-item" target="_blank" onclick="_hmt.push(['_trackEvent', 'packages', 'click', 'bootstrap'])">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h4>{{ tran.trans_output }}</h4>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+        </ul>
+        {% else %}
+        <p>No polls are available.</p>
+        {% endif %}
+
+    </div>
+    <footer id="footer" class="footer hidden-print">
+        <div class="container">
+            <div class="row">
+                <div class="footer-about col-md-5 col-sm-12" id="about">
+                    <h4>关于 Atman</h4>
+                    <p>something
+                </div>
+            </div>
+        </div>
+        <div class="copy-right">
+            <span>DD/MM/YYYY</span>
+        </div>
+    </footer>
+</main>
+<a href="#" id="back-to-top" style="display: block;"></a>
+<script>
+    $('#translate_button').on('click', function () {
+    var $btn = $(this).button('loading');
+    console.log('hi');
+    // business logic...
+
+    // {search_item} = document.getElementById("trans_item");
+    $btn.button('reset');
+    })
+</script>
+
+</body>
+</html>
