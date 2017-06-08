@@ -1,13 +1,11 @@
-{% load static %}
-
-<link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}" />
-{% if latest_question_list %}
+{% if not_empty %}
+<strong> Translations for {{ trans_source.trans_source}}</strong>
     <ul>
-    {% for question in latest_question_list %}
-        <!--<li><a href="/polls/{{ question.id }}/">{{ question.question_text }}</a></li>-->
-        <li><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
+        {% for tran in curr_trans_list.all %}
+        <li><a href="/polls/{{ tran.id }}/result">{{ tran.trans_output }}</a></li>
         {% endfor %}
     </ul>
 {% else %}
-    <p>No polls are available.</p>
+<p>No translations are available.</p>
 {% endif %}
+

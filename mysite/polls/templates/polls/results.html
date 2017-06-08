@@ -1,15 +1,1 @@
-<h1>Your translation source is: {{ transsource.trans_source }}</h1>
-{% if error_msg %}<p><strong>{{ error_msg }}</strong></p>{% endif %}
-<!--<ul>-->
-    <!--Your translation engine is: {{ selected_trans.trans_engine}}-->
-<!--</ul>-->
-
-<form action="{% url 'polls:vote' transsource.id %}" method="post">
-{% csrf_token %}
-{% for choice in question.choice_set.all %}
-    <input type="radio" name="transresult" id="transresult{{ forloop.counter }}" value="{{ transresult.id }}" />
-    <label for="transresult{{ forloop.counter }}">{{ transresult.trans_output }}</label><br />
-{% endfor %}
-<input type="submit" value="Vote" />
-</form>
-<a href="/polls/">Vote again?</a>
+<strong>in the result page for {{ selected_trans.trans_source }}</strong>

@@ -1,8 +1,5 @@
 from django.db import models
-from django.forms import ModelForm
 import datetime
-
-from django.utils import timezone
 
 
 # Create your models here.
@@ -41,7 +38,7 @@ class TransSource(models.Model):
 
 class TransResult(models.Model):
     # trans_source = models.TextField(null=True)
-    trans_source = models.ForeignKey(TransSource, null=True)
+    trans_source = models.ForeignKey(TransSource, null=True, on_delete=models.CASCADE)
     trans_output = models.TextField(null=True)
     trans_time = models.DateTimeField(default=datetime.datetime.now)
     trans_engine = models.CharField(max_length=10, null=True)
@@ -50,18 +47,6 @@ class TransResult(models.Model):
     vote_time = models.DateTimeField(default=datetime.datetime.now)
     def __str__(self):
         return self.trans_output
-
-
-class TransSourceForm(ModelForm):
-    class Meta:
-        model = TransSource
-        fields = ['trans_source', 'trans_source_lang', 'trans_source_type']
-
-class TransResultForm(ModelForm):
-    class Meta:
-        model = TransResult
-        fields = ['trans_source', 'trans_output', 'trans_time', 'trans_engine',
-                  'trans_output_lang', 'vote_result', 'vote_time']
 
 
 # class VoteResult(models.Model):

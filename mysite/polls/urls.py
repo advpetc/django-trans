@@ -3,7 +3,7 @@ from django.conf.urls import url
 from . import views
 
 app_name = 'polls'
-urlpatterns = [
+urlpatterns = {
     # ex: /polls/
     # url(r'^$', views.IndexView.as_view(), name='index'),
     # # ex: /polls  /5/
@@ -17,9 +17,15 @@ urlpatterns = [
     # /polls/
     url(
         r'^$',
-        views.index,
-        name='polls-index'
+        views.homepage,
+        name='homepage'
     ),
+    #
+    # url(
+    #     r'^index/',
+    #     views.index,
+    #     name='index'
+    # ),
 
     # /polls/3
     url(
@@ -28,4 +34,4 @@ urlpatterns = [
         name='result'
     ),
 
-]
+}

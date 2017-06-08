@@ -15,6 +15,14 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script type="text/javascript">
         var _hmt = _hmt || [];
+        $('#translate_button').on('click', function () {
+        var $btn = $(this).button('loading');
+        console.log('hi');
+        // business logic...
+
+        // {search_item} = document.getElementById("trans_item");
+        $btn.button('reset');
+        })
     </script>
 
 </head>
@@ -27,18 +35,27 @@
                 <h1>翻译表</h1>
                 <p><strong>输入翻译文字</strong>
                 </p>
-                <form class="search-wraper" role="search">
+                <form class="search-wraper" role="search" action="/polls/" method="POST">
+                    {% csrf_token %}
+                    <!--<form class="search-wraper" role="search" action="http://translate.atman360.com/third_translate" method="post" accept="application/json">-->
                     <div class="form-group">
                         <!--<input class="form-control search clearable" placeholder="搜索文字，例如：jquery" autocomplete="off" value="{{ search_item}}">-->
-                        <textarea id="trans_item" class="form-control" rows="3" cols="20" placeholder="搜索翻译文字，例如：what is jquery?" required>{{ TransResult.trans_source}}</textarea>
+                        <textarea type="text" name="q" class="form-control" rows="3" cols="20"
+                                  placeholder="搜索翻译文字，例如：what is jquery?" required></textarea>
+                        <!--<input type="text" name="type" value="google">-->
+                        <!--<input type="text" name="from" value="en">-->
+                        <input type="text" name="to" value="zh">
+                        <!--<input type="text" name="extra" value="{domain:'finance'}">-->
+                        <input type="text" name="lang" value="en">
+                        <input type="text" name="type" value="medical">
                         <i class="fa x fa-search onX"></i>
                     </div>
-                    <button type="button" class="btn btn-lg btn-primary" id="translate_button">Translate</button>
+                    <button type="submit" class="btn btn-lg btn-primary" id="translate_button">Translate</button>
                     <div class="pull-right">
                         <div class="btn-group">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        源语言 <span class="caret"></span>
-                    </button>
+                                源语言 <span class="caret"></span>
+                            </button>
                             <ul class="dropdown-menu">
                                 <li class="dropdown-header">源语言</li>
                                 <li><a href="#">英文</a></li>
@@ -75,6 +92,7 @@
                             </ul>
                         </div>
                     </div>
+                    <!--</div>-->
 
                 </form>
             </div>
@@ -182,9 +200,9 @@
                 <!--</div>-->
             <!--</a>-->
         <!--</div>-->
-        {% if latest_trans_list %}
+        {% if not_empty %}
         <ul class="list-group packages" id="common-packages" style="display:block;">
-        {% for tran in latest_trans_list %}
+            {% for tran in curr_trans_list.all %}
             <a href="/polls/{{ tran.id }}/" class="t1 list-group-item" target="_blank" onclick="_hmt.push(['_trackEvent', 'packages', 'click', 'bootstrap'])">
                 <div class="row">
                     <div class="col-md-3">
@@ -214,16 +232,6 @@
     </footer>
 </main>
 <a href="#" id="back-to-top" style="display: block;"></a>
-<script>
-    $('#translate_button').on('click', function () {
-    var $btn = $(this).button('loading');
-    console.log('hi');
-    // business logic...
-
-    // {search_item} = document.getElementById("trans_item");
-    $btn.button('reset');
-    })
-</script>
 
 </body>
 </html>
