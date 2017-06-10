@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        function loadSelection(target) {
+            var list = document.getElementById(target);
+            var index = list.selectedIndex;
+            return select = list[index].text;
+        }
+
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-heading">搜索</div>
+                <div class="panel-body">
+                    <form role="search" action="/search/" method="POST">{% csrf_token %}
+                        <input type="hidden" name="contentCount" value="1"/>
+                        <div class="form-group">
+                            <label for="content-1">搜索engine(s)</label>
+                            <select class="form-control" name="engine" value="loadSelection('engine')" id="engine">
+                                <option value="google">Google</option>
+                                <option value="baidu">百度</option>
+                                <option value="youdao">有道</option>
+                                <option value="bing">Bing</option>
+                                <option value="atman">Atman</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="input-StartDate-1">启始时间</label>
+                            <input type="date" class="form-control" id="input-StartDate-1" name="start_time"
+                                   value="{{start_time}}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-EndDate-1">结束时间</label>
+                            <input type="date" class="form-control" id="input-EndDate-1" name="end_time"
+                                   value="{{end_time}}" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-default">搜索</button>
+                        <a href="/" class="btn btn-default">回到翻译界面</a>
+                    </form>
+                </div><!-- END panel-body -->
+            </div><!-- END panel -->
+        </div><!-- END panel-group -->
+    </div><!-- END row -->
+</div><!-- END container -->
+
+
+<div class="container">
+    <div class="col-md-9">
+        <p class="search-results-count">About {{ trans_results|length }} results</p>
+        <section class="search-result-item">
+            <!-- <a class="image-link" href="#"><img class="image" src="http://bootdey.com/img/Content/avatar/avatar1.png">
+            </a> -->
+            {% for result in trans_results %}
+            <div class="list-group">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <h4 class="search-result-item-heading"><a href="#">{{ result.0.trans_source|truncatewords:10
+                            }}</a></h4>
+                        <p class="info">By {{ result.0.trans_engine }}</p>
+                        <p class="description">{{ result.0.trans_output }}</p>
+                        {% for voter in result.1 %}
+                        <p class="info">By {{ voter.trans_engine }}</p>
+                        <p class="description">{{ voter.trans_output }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="col-sm-3">
+                        <p class="value3 mt-sm">Votes: {{ result.0.vote_result }}</p>
+                        {% for voter in result.1 %}
+                        <p class="fs-mini text-muted">{{ voter.trans_engine }} : {{ voter.vote_result }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="pagination">
+                <span class="step-links">
+                    {% if trans_results.has_previous %}
+                    <a href="?page={{ trans_results.previous_page_number }}">上一页</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ trans_results.number }} of {{ trans_results.paginator.num_pages }}.
+                    </span>
+                    {% if trans_results.has_next %}
+                        <a href="?page={{ trans_results.next_page_number }}">下一页</a>
+                    {% endif %}
+                </span>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

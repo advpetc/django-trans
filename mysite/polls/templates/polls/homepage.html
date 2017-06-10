@@ -16,76 +16,61 @@
     <script type="text/javascript">
         var _hmt = _hmt || [];
     </script>
+    <script type="text/javascript">
+        function loadSelection(target) {
+            var list = document.getElementById(target);
+            var index = list.selectedIndex;
+            return select = list[index].text;
+        }
+
+    </script>
 
 
 </head>
-<body class="home-template" data-gr-c-s-loaded="true">
+<body class="home-template">
 <header class="site-header">
-    <nav class="navbar" id="top"></nav>
+    <!--<nav class="navbar" id="top"></nav>-->
     <div class="container jumbotron">
         <div class="row">
             <div class="col-xs-12">
-                <h1>翻译表</h1>
+                <h1>Search Vote</h1>
                 <p><strong>输入翻译文字</strong>
                 </p>
+
+                <!--<form action="/search/" method="POST">{% csrf_token %}-->
+                <!--<button type="submit" class="btn btn-lg btn-default">Go search</button>-->
+                <!--</form>-->
+                <!--<a href="search/" class="btn btn-lg btn-default">搜索数据库</a>-->
                 <form class="search-wraper" role="search" action="/" method="POST">
                     {% csrf_token %}
-                    <!--<form class="search-wraper" role="search" action="http://translate.atman360.com/third_translate" method="post" accept="application/json">-->
                     <div class="form-group">
-                        <!--<input class="form-control search clearable" placeholder="搜索文字，例如：jquery" autocomplete="off" value="{{ search_item}}">-->
-                        <textarea type="text" name="q" class="form-control" rows="3" cols="20"
-                                  placeholder="搜索翻译文字，例如：what is jquery?" required></textarea>
-                        <!--<input type="text" name="type" value="google">-->
-                        <!--<input type="text" name="from" value="en">-->
-                        <input type="text" name="to" value="zh">
-                        <!--<input type="text" name="extra" value="{domain:'finance'}">-->
-                        <input type="text" name="lang" value="en">
-                        <input type="text" name="type" value="medical">
+                        <textarea maxlength="3000" id="searcharea" type="text" name="q" class="form-control" rows="3"
+                                  cols="20"
+                                  placeholder="搜索翻译文字，例如：what is jquery?" required>{{ source }}</textarea>
                         <i class="fa x fa-search onX"></i>
                     </div>
-                    <button type="submit" class="btn btn-lg btn-primary" id="translate_button">Translate</button>
+                    <button type="submit" class="btn btn-lg btn-primary" id="translate_button">翻译</button>
+                    <a href="search/" class="btn btn-lg btn-default">搜索数据库</a>
                     <div class="pull-right">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                源语言 <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li class="dropdown-header">源语言</li>
-                                <li><a href="#">英文</a></li>
-                                <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something else here</a></li>
-                                <li role="separator" class="divider"></li>
-                                <li><a href="#">Separated link</a></li>
-                            </ul>
+                        <label>源语言：</label>
+                        <select class="selectpicker" name="lang" value="loadSelection('lang')" id="lang">
+                            <option value="en">英文</option>
+                            <option value="zh">中文</option>
+                        </select>
+                        <label>目标语言：</label>
+                        <select class="selectpicker" name="to" value="loadSelection('to')" id="to">
+                            <!--<option value="en">英文</option>-->
+                            <option value="zh">中文</option>
+                            <option value="en">英文</option>
+                        </select>
+                        <label>类别：</label>
+                        <select class="selectpicker" name="type" value="loadSelection('type')" id="type">
+                            <option value="technology">科技</option>
+                            <!--<option value="finance">金融</option>-->
+                            <option value="political">时政</option>
+                            <option value="medical">医疗</option>
+                        </select>
                     </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                目标语言 <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li class="dropdown-header">目标语言</li>
-                                <li><a href="#">中文</a></li>
-                                <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something else here</a></li>
-                                <li role="separator" class="divider"></li>
-                                <li><a href="#">Separated link</a></li>
-                            </ul>
-                        </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                类别 <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li class="dropdown-header">类别</li>
-                                <li><a href="#">医药</a></li>
-                                <li><a href="#">科技</a></li>
-                                <li><a href="#">Something else here</a></li>
-                                <li role="separator" class="divider"></li>
-                                <li><a href="#">Separated link</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <!--</div>-->
 
                 </form>
             </div>
@@ -93,45 +78,78 @@
     </div>
     <div class="mostused-keywords well well-sm text-center hidden-xs hidden-sm">
         <ul class="list-inline">
-            <li>choose the one translation that makes sense to you</li>
+            <li>选择你认为最好的翻译，点击"选择"按钮进行选择</li>
         </ul>
     </div>
 </header>
-<main class="packages-list-container" id="all-trans">
+<main class="packages-list-container">
     <div class="container">
+        <!-- <section class="layout-article"> -->
         {% if not_empty %}
-        <ul class="list-group packages" id="common-packages" style="display:block;">
-            {% for tran in curr_trans_list.all %}
-            <a href="/{{ tran.id }}/" class="t1 list-group-item" target="_blank"
-               onclick="_hmt.push(['_trackEvent', 'packages', 'click', 'bootstrap'])">
-                <div class="row">
-                    <div class="col-md-3">
-                        <h4>{{ tran.trans_output }}</h4>
-                    </div>
-                </div>
-            </a>
+        <ul class="list-group">
+            <!--<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">-->
+            {% if searched %}
+            <strong>您输入的语句之前已经被翻译</strong>
+            {% else %}
+            <strong>您输入的语句之前没有人搜索过</strong>
+            {% endif %}
+            {% for tran in curr_trans_list %}
+
+
+            <!--<a href="/{{ tran.id }}/" class="t1 list-group-item" target="_blank"-->
+            <!--onclick="_hmt.push(['_trackEvent', 'packages', 'click', 'bootstrap'])">-->
+            <h1>{{ tran.trans_engine }}</h1>
+            <li class="list-group-item">
+                <!-- <article class="box-article"><a href="/{{ tran.id }}/"></a> -->
+                {{ tran.trans_output }}
+                <a href="/{{ tran.id }}/">选择</a>
+                <!-- </article> -->
+            </li>
+            <!--</a>-->
+
+
+            <!--<div class="panel panel-default">-->
+            <!--<div class="panel-heading" role="tab" id="headingThree">-->
+            <!--<h4 class="panel-title">-->
+            <!--<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#{{tran.id}}" aria-expanded="false" aria-controls="collapseThree">-->
+            <!--{{ tran.trans_engine }}-->
+            <!--<a href="/{{ tran.id }}/" class="pull-right">Vote For this result</a>-->
+            <!--</a>-->
+            <!--</h4>-->
+            <!--</div>-->
+            <!--<div id="{{tran.id}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">-->
+            <!--<div class="panel-body">-->
+            <!--{{ tran.trans_output }}-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+
+
+
+
+
         {% endfor %}
         </ul>
         {% else %}
-        <p>No polls are available.</p>
+        <p class="navbar-text">投票选项不可用</p>
         {% endif %}
-
+        <!-- </section> -->
     </div>
-    <footer id="footer" class="footer hidden-print">
-        <div class="container">
-            <div class="row">
-                <div class="footer-about col-md-5 col-sm-12" id="about">
-                    <h4>关于 Atman</h4>
-                    <p>something
-                </div>
-            </div>
-        </div>
-        <div class="copy-right">
-            <span>DD/MM/YYYY</span>
-        </div>
-    </footer>
+    <!--<footer id="footer" class="footer hidden-print">-->
+    <!--<div class="container">-->
+    <!--<div class="row">-->
+    <!--<div class="footer-about col-md-5 col-sm-12" id="about">-->
+    <!--<h4>关于 Atman</h4>-->
+    <!--<p>something-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--<div class="copy-right">-->
+    <!--<span>DD/MM/YYYY</span>-->
+    <!--</div>-->
+    <!--</footer>-->
 </main>
-<a href="#" id="back-to-top" style="display: block;"></a>
+<a href="#" style="display: block;" class="pull-right">回到顶部</a>
 
 </body>
 </html>

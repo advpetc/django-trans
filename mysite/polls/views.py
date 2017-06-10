@@ -3,22 +3,32 @@ from django.utils import timezone
 import requests
 from .models import TransSource, TransResult
 import json
+import datetime
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 def homepage(request):
-    '''
+    """
     Display the homepage
-    '''
+    """
     if request.method == 'POST':
-        if TransSource.objects.filter(trans_source=request.POST['q'],
-                                      trans_source_lang=request.POST['lang'],
-                                      trans_source_type=request.POST['type']).exists():
+        source = request.POST['q']
+        if TransSource.objects.filter(
+                trans_source=request.POST['q'],
+                trans_source_lang=request.POST['lang'],
+                trans_source_type=request.POST['type']).exists():
+            searched = 1
             pass
         else:
-            engines = ['google', 'atman', 'baidu', 'youdao', 'bing']
+            searched = 0
+            if request.POST['lang'] == 'en' and request.POST['to'] == 'zh':
+                engines = ['google', 'baidu', 'youdao', 'bing', 'atman']
+            else:
+                engines = ['google', 'baidu', 'youdao', 'bing']
             s = TransSource(trans_source=request.POST['q'],
                             trans_source_lang=request.POST['lang'],
                             trans_source_type=request.POST['type'])
+            s.save()
             for engine in engines:
                 send_API = {
                     'type': engine,
@@ -36,7 +46,7 @@ def homepage(request):
                 }
                 r = requests.post(host, json=send_API, headers=headers)
                 resp = json.loads(r.content.decode('utf-8'))
-                s.save()
+
                 s.transresult_set.create(
                     trans_output=resp["data"][0]["text"],
                     trans_time=str(timezone.now()),
@@ -53,9 +63,12 @@ def homepage(request):
         else:
             not_empty = 0
 
+
         context = {
-            'curr_trans_list': curr_trans_list,
+            'source': source,
+            'curr_trans_list': curr_trans_list.all,
             'not_empty': not_empty,
+            'searched': searched
         }
         return render(request, 'polls/homepage.html', context)
     else:
@@ -67,11 +80,60 @@ def homepage(request):
 
 
 def result(request, voteresult_id):
-    '''
+    """
     show result page
-    '''
+    """
     selected_trans = get_object_or_404(TransResult, pk=voteresult_id)
     selected_trans.vote_result += 1
     selected_trans.vote_time = timezone.now()
     selected_trans.save()
-    return render(request, 'polls/results.html', {'selected_trans': selected_trans})
+
+    source = selected_trans.trans_source
+    all_trans_result = source.transresult_set.order_by('-vote_result')
+    return render(request, 'polls/result.html', {'all_trans_result': all_trans_result,
+                                                 'source': source.trans_source})
+
+
+def search(request):
+    """
+    Go to search interface
+    """
+    if request.method == 'POST':
+        result_list = TransResult.objects.filter(
+            trans_engine=request.POST['engine'],
+            vote_time__range=[
+                datetime.datetime.strptime(request.POST['start_time'], "%Y-%m-%d"),
+                datetime.datetime.strptime(request.POST['end_time'], "%Y-%m-%d")
+            ]
+        )
+        result_list.order_by('vote_result')
+        jump_in = []
+        for each_one in result_list:
+            # print(each_one)
+            source = each_one.trans_source
+            all_trans_results = TransResult.objects.filter(trans_source=source)
+            other_trans_results = all_trans_results.exclude(trans_engine=request.POST['engine'])
+
+            snip_in = [each_one, other_trans_results]
+            jump_in.append(snip_in)
+
+        paginator = Paginator(jump_in, 25)  # Show 25 contacts per page
+
+        page = request.GET.get('page')
+        try:
+            jump_in = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            jump_in = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            jump_in = paginator.page(paginator.num_pages)
+
+        context = {
+            'trans_results': jump_in,
+            'start_time': request.POST['start_time'],
+            'end_time': request.POST['end_time']
+        }
+        return render(request, 'polls/search.html', context)
+    else:
+        return render(request, 'polls/search.html')
