@@ -33,14 +33,10 @@
     <div class="container jumbotron">
         <div class="row">
             <div class="col-xs-12">
-                <h1>Search Vote</h1>
+                <h1>Translations Vote</h1>
                 <p><strong>输入翻译文字</strong>
                 </p>
 
-                <!--<form action="/search/" method="POST">{% csrf_token %}-->
-                <!--<button type="submit" class="btn btn-lg btn-default">Go search</button>-->
-                <!--</form>-->
-                <!--<a href="search/" class="btn btn-lg btn-default">搜索数据库</a>-->
                 <form class="search-wraper" role="search" action="/" method="POST">
                     {% csrf_token %}
                     <div class="form-group">
@@ -65,13 +61,11 @@
                         </select>
                         <label>类别：</label>
                         <select class="selectpicker" name="type" value="loadSelection('type')" id="type">
-                            <option value="technology">科技</option>
-                            <!--<option value="finance">金融</option>-->
                             <option value="political">时政</option>
+                            <option value="technology">科技</option>
                             <option value="medical">医疗</option>
                         </select>
                     </div>
-
                 </form>
             </div>
         </div>
@@ -84,51 +78,30 @@
 </header>
 <main class="packages-list-container">
     <div class="container">
-        <!-- <section class="layout-article"> -->
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li
+            {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+
         {% if not_empty %}
         <ul class="list-group">
-            <!--<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">-->
             {% if searched %}
             <strong>您输入的语句之前已经被翻译</strong>
             {% else %}
             <strong>您输入的语句之前没有人搜索过</strong>
             {% endif %}
             {% for tran in curr_trans_list %}
-
-
-            <!--<a href="/{{ tran.id }}/" class="t1 list-group-item" target="_blank"-->
-            <!--onclick="_hmt.push(['_trackEvent', 'packages', 'click', 'bootstrap'])">-->
             <h1>{{ tran.trans_engine }}</h1>
             <li class="list-group-item">
-                <!-- <article class="box-article"><a href="/{{ tran.id }}/"></a> -->
                 {{ tran.trans_output }}
                 <a href="/{{ tran.id }}/">选择</a>
-                <!-- </article> -->
             </li>
-            <!--</a>-->
-
-
-            <!--<div class="panel panel-default">-->
-            <!--<div class="panel-heading" role="tab" id="headingThree">-->
-            <!--<h4 class="panel-title">-->
-            <!--<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#{{tran.id}}" aria-expanded="false" aria-controls="collapseThree">-->
-            <!--{{ tran.trans_engine }}-->
-            <!--<a href="/{{ tran.id }}/" class="pull-right">Vote For this result</a>-->
-            <!--</a>-->
-            <!--</h4>-->
-            <!--</div>-->
-            <!--<div id="{{tran.id}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">-->
-            <!--<div class="panel-body">-->
-            <!--{{ tran.trans_output }}-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--</div>-->
-
-
-
-
-
-        {% endfor %}
+            {% endfor %}
         </ul>
         {% else %}
         <p class="navbar-text">投票选项不可用</p>
