@@ -42,10 +42,12 @@
                 <form class="search-wraper" role="search" action="/" method="POST">
                     {% csrf_token %}
                     <div class="form-group">
-                        <textarea maxlength="3000" id="searcharea" type="text" name="q" class="form-control" rows="3"
+                        <textarea maxlength="3000" type="text" name="q" class="form-control" rows="3"
                                   cols="20"
                                   placeholder="搜索翻译文字，例如：what is jquery?" required>{{ source }}</textarea>
                         <i class="fa x fa-search onX"></i>
+                        <textarea name="userTrans">{{ userInput }}</textarea>
+                        <label>{{ score }}</label>
                     </div>
                     <button type="submit" class="btn btn-lg btn-primary" id="translate_button">翻译</button>
                     <a href="search/" class="btn btn-lg btn-default">搜索数据库</a>
@@ -101,6 +103,7 @@
             <h1>{{ tran.trans_engine }}</h1>
             <li class="list-group-item">
                 {{ tran.trans_output }}
+                {{ tran.score }}
                 <a href="/{{ tran.id }}/">选择</a>
             </li>
             {% endfor %}

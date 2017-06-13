@@ -8,6 +8,7 @@ import json
 import datetime
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
+import subprocess, sys, shlex
 
 
 def homepage(request):
@@ -15,11 +16,23 @@ def homepage(request):
     Display the homepage
     """
     if request.method == 'POST':
+        user_trans = request.POST['userTrans']
+        command = shlex.split('/usr/bin/perl multi-bleu.perl reference < mt-output')
+        user_in = 'reference'
+        engine_in = 'mt-output'
+
         source = request.POST['q'].strip()
         source_lang = request.POST['lang']
         source_type = request.POST['type']
 
         source_to = request.POST['to']
+
+        user_target = open(user_in, 'w')
+        if source_to == 'zh':
+            user_target.write(" ".join(user_trans))
+        else:
+            user_target.write(user_trans)
+        user_target.close()
 
         if TransSource.objects.filter(
                 trans_source=source,
@@ -36,7 +49,14 @@ def homepage(request):
         s = TransSource(trans_source=source,
                         trans_source_lang=source_lang,
                         trans_source_type=source_type)
-        s.save()
+        if not searched:
+            s.save()
+        else:
+            s = TransSource.objects.filter(
+                trans_source=source,
+                trans_source_lang=source_lang,
+                trans_source_type=source_type
+            )[0]
         for engine in engines:
             send_API = {
                 'type': engine,
@@ -54,32 +74,24 @@ def homepage(request):
             }
             r = requests.post(host, json=send_API, headers=headers)
             resp = json.loads(r.content.decode('utf-8'))
-
             if resp['errorCode'] == 0:
-                # if searched:
-                #     print(s)
-                #     test1 = TransResult
-                #     print(test1)
-                #     test = TransResult.objects.filter(trans_source=s)
-                #
-                #     print(test)
-                #     TransResult.objects.filter(trans_source=s, trans_engine=engine)[0].update(
-                #         trans_output=resp['data'][0]['text'],
-                #         trans_time=str(timezone.now()),
-                #     )
-                # else:
-                # s.save()
+
+                engine_target = open(engine_in, 'w')
+                if source_to == 'zh':
+                    engine_target.write(" ".join(resp['data'][0]['text']))
+                else:
+                    engine_target.write(resp['data'][0]['text'])
+                engine_target.close()
+                with open(user_in) as input_file:
+                    score = subprocess.check_output(command, stdin=input_file)
                 s.transresult_set.update_or_create(
                     trans_output=resp['data'][0]['text'],
                     trans_time=str(timezone.now()),
                     trans_engine=engine,
-                    trans_output_lang=source_to)
-                # if not searched:
-                #     s.save()
+                    trans_output_lang=source_to,
+                    score=score)
             else:
                 messages.add_message(request, messages.ERROR, resp['errorMessage'] + " from " + engine)
-
-        # s.save()
         curr_trans_list = TransSource.objects.filter(
             trans_source=source,
             trans_source_lang=source_lang,
@@ -94,6 +106,7 @@ def homepage(request):
             'curr_trans_list': curr_trans_list.all,
             'not_empty': not_empty,
             'searched': searched,
+            'userInput': user_trans
         }
         return render(request, 'polls/homepage.html', context)
 

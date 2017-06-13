@@ -21,6 +21,7 @@ class TransResult(models.Model):
     trans_output_lang = models.CharField(max_length=2, null=True)
     vote_result = models.IntegerField(default=0)
     vote_time = models.DateTimeField(null=True, blank=True)
+    score = models.CharField(max_length=20, null=True)
 
     def __str__(self):
         return self.trans_output
