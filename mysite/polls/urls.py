@@ -23,5 +23,4 @@ urlpatterns = [
         views.result,
         name='result'
     ),
-
 ]

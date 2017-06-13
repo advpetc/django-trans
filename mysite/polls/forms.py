@@ -1,7 +1,8 @@
 # from django import forms
+# from .models import TransResult
 #
-# class SearchForm(forms.Form):
-#     engines_list = (
-#         ()
-#     )
-#     engine = forms.CharField(label="search_engine", max_length=10)
+#
+# class CommentForm(forms.ModelForm):
+#     class Meta:
+#         module = TransResult
+#         fields = ('text',)

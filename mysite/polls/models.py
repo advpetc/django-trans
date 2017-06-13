@@ -24,3 +24,11 @@ class TransResult(models.Model):
 
     def __str__(self):
         return self.trans_output
+
+
+class Comment(models.Model):
+    result = models.ForeignKey(TransResult, null=True, on_delete=models.CASCADE)
+    comment = models.TextField(null=True)
+
+    def __str__(self):
+        return self.comment
