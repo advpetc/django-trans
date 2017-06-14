@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.utils import timezone
 import requests
@@ -8,7 +8,10 @@ import json
 import datetime
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
-import subprocess, sys, shlex
+import subprocess
+import shlex
+from django.template.loader import get_template
+from django.template.context import RequestContext
 
 
 def homepage(request):
@@ -34,38 +37,30 @@ def homepage(request):
             user_target.write(user_trans)
         user_target.close()
 
-        if TransSource.objects.filter(
-                trans_source=source,
-                trans_source_lang=source_lang,
-                trans_source_type=source_type).exists():
-            searched = 1
-        else:
-            searched = 0
-
         if source_lang == 'en' and source_to == 'zh':
             engines = ['google', 'baidu', 'youdao', 'bing', 'atman']
         else:
             engines = ['google', 'baidu', 'youdao', 'bing']
 
-        if not searched:
-            s = TransSource(trans_source=source,
-                            trans_source_lang=source_lang,
-                            trans_source_type=source_type)
-            s.save()
+        if TransSource.objects.filter(
+                trans_source=source
+        ).exists():
+            searched = True
         else:
-            s = TransSource.objects.filter(
-                trans_source=source,
-                trans_source_lang=source_lang,
-                trans_source_type=source_type
-            )[0]
+            searched = False
+
+        temp, created = TransSource.objects.get_or_create(trans_source=source,
+                                                          trans_source_lang=source_lang,
+                                                          trans_source_type=source_type)
+
         for engine in engines:
-            send_API = {
+            send = {
                 'type': engine,
-                'from': s.trans_source_lang,
+                'from': source_lang,
                 'to': source_to,
-                'q': [{'id': 1, 'text': s.trans_source}],
+                'q': [{'id': 1, 'text': source}],
                 'extra': {
-                    'domain': s.trans_source_type,
+                    'domain': source_type,
                 }
             }
             host = "http://translate.atman360.com/third_translate"
@@ -73,7 +68,7 @@ def homepage(request):
                 'content-type': 'application/json;charset=utf-8',
                 'accept': 'application/json'
             }
-            r = requests.post(host, json=send_API, headers=headers)
+            r = requests.post(host, json=send, headers=headers)
             resp = json.loads(r.content.decode('utf-8'))
             if resp['errorCode'] == 0:
                 engine_target = open(engine_in, 'w')
@@ -82,35 +77,45 @@ def homepage(request):
                 else:
                     engine_target.write(resp['data'][0]['text'])
                 engine_target.close()
-                with open(user_in) as input_file:
-                    score = subprocess.check_output(command, stdin=input_file)
-                s.transresult_set.update_or_create(
-                    trans_output=resp['data'][0]['text'],
-                    trans_time=str(timezone.now()),
-                    trans_engine=engine,
-                    trans_output_lang=source_to,
-                    score=score)
+                if user_trans == "":
+                    score = 0
+
+                else:
+                    with open(user_in) as input_file:
+                        score = subprocess.check_output(command, stdin=input_file)
+
+                if searched:
+                    TransResult.objects.filter(trans_source=temp,
+                                               trans_engine=engine).update(trans_output=resp['data'][0]['text'],
+                                                                           score=score,
+                                                                           trans_time=str(timezone.now()),
+                                                                           user_trans=user_trans)
+                else:
+                    temp.transresult_set.create(
+                        trans_output=resp['data'][0]['text'],
+                        trans_time=str(timezone.now()),
+                        trans_engine=engine,
+                        trans_output_lang=source_to,
+                        score=score,
+                        user_trans=user_trans
+                    )
+
             else:
                 messages.add_message(request, messages.ERROR, resp['errorMessage'] + " from " + engine)
-        curr_trans_list = TransSource.objects.filter(
-            trans_source=source,
-            trans_source_lang=source_lang,
-            trans_source_type=source_type)[0].transresult_set
-        print(curr_trans_list.all())
 
+        curr_trans_list = temp.transresult_set
         if curr_trans_list.count() != 0:
             not_empty = 1
         else:
             not_empty = 0
         context = {
-            'source': source,
             'curr_trans_list': curr_trans_list.all,
             'not_empty': not_empty,
             'searched': searched,
-            'userInput': user_trans
         }
-        return render(request, 'polls/homepage.html', context)
-
+        t = get_template('polls/search_results.html')
+        html = t.render(RequestContext(request, context))
+        return HttpResponse(html)
     else:
         latest_trans_list = TransResult.objects.order_by('trans_time')[:]
         context = {
@@ -143,26 +148,11 @@ def result(request, voteresult_id):
         return HttpResponseRedirect(reverse('polls:result', args=(voteresult_id,)))
 
 
-# def comment(request, pk):
-#     """
-#     Add Comment
-#     """
-#     print(request)
-#     selected_trans = get_object_or_404(TransResult, pk=pk)
-#     if request.method == 'POST':
-#         selected_trans.comment_set.create(
-#             comment=request.POST['comment']
-#         )
-#         selected_trans.save()
-#         return render(request, 'polls/result.html')
-
-
 def search(request):
     """
     Go to search interface
     """
     if request.method == 'POST':
-        # print(request.POST['start_time'])
         result_list = TransResult.objects.filter(
             trans_engine=request.POST['engine'],
             trans_time__range=[
@@ -173,7 +163,6 @@ def search(request):
         result_list.order_by('vote_result')
         jump_in = []
         for each_one in result_list:
-            # print(each_one)
             source = each_one.trans_source
             all_trans_results = TransResult.objects.filter(trans_source=source)
             other_trans_results = all_trans_results.exclude(trans_engine=request.POST['engine'])

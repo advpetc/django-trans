@@ -96,8 +96,8 @@
             <div class="list-group">
                 <div class="row">
                     <div class="col-sm-9">
-                        <h4 class="search-result-item-heading"><a href="#">{{ result.0.trans_source|truncatewords:10
-                            }}</a></h4>
+                        <h4 class="search-result-item-heading"><a href="#">{{
+                            result.0.trans_source|truncatewords:10}}</a></h4>
                         <p class="info">By {{ result.0.trans_engine }}</p>
                         <p>{{ result.0.trans_output }}</p>
                         {% for voter in result.1 %}

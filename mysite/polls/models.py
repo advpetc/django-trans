@@ -22,6 +22,7 @@ class TransResult(models.Model):
     vote_result = models.IntegerField(default=0)
     vote_time = models.DateTimeField(null=True, blank=True)
     score = models.CharField(max_length=20, null=True)
+    user_trans = models.TextField(null=True)
 
     def __str__(self):
         return self.trans_output

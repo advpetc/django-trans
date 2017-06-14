@@ -18,7 +18,7 @@
 </head>
 <body>
 <table class="table">
-    <caption>in the result page for {{ source }}</caption>
+    <caption>In the result page for {{ source }}</caption>
     <thread>
         <tr>
             <th>排名</th>
@@ -41,19 +41,30 @@
     </thread>
 </table>
 <p><strong>Make comment:</strong></p>
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li
-            {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
-<form class="search-wraper" role="search" action="/{{ id }}/" method="POST">{% csrf_token %}
-    <textarea name="comment" cols="30" rows="10"></textarea>
-    <button type="submit">Save comment</button>
+<div class="alert" id="status">
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li
+                {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+<form id="comment_form" class="search-wraper" role="search" action="/{{ id }}/" method="POST">{% csrf_token %}
+
+    <div class="form-group">
+        <textarea id="comment_area" maxlength="3000" type="text" name="comment" class="form-control" rows="10" cols="10"
+                  placeholder="输入您对翻译结果的建议">{{ comment }}</textarea>
+        <i class="fa x fa-search onX"></i>
+    </div>
+
+    <button type="submit" class="btn btn-success btn-circle btn-xl"><i class="glyphicon glyphicon-link"></i>Save comment
+    </button>
 </form>
 <a href="/">Go back to home</a>
 </body>
+
+
 </html>

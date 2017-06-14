@@ -15,19 +15,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <script type="text/javascript">
-        var _hmt = _hmt || [];
-    </script>
-    <script type="text/javascript">
-        function loadSelection(target) {
-            var list = document.getElementById(target);
-            var index = list.selectedIndex;
-            return select = list[index].text;
-        }
-
-    </script>
-
-
 </head>
 <body class="home-template">
 <header class="site-header">
@@ -39,15 +26,19 @@
                 <p><strong>输入翻译文字</strong>
                 </p>
 
-                <form class="search-wraper" role="search" action="/" method="POST">
+                <form class="search-wraper" role="search" action="/" method="POST" id="search_form">
                     {% csrf_token %}
                     <div class="form-group">
                         <textarea maxlength="3000" type="text" name="q" class="form-control" rows="3"
-                                  cols="20"
+                                  cols="20" id="q_search"
                                   placeholder="搜索翻译文字，例如：what is jquery?" required>{{ source }}</textarea>
                         <i class="fa x fa-search onX"></i>
-                        <textarea name="userTrans">{{ userInput }}</textarea>
-                        <label>{{ score }}</label>
+                    </div>
+                    <div class="form-group">
+                        <textarea maxlength="3000" type="text" name="userTrans" class="form-control" rows="3"
+                                  cols="20" id="user_trans"
+                                  placeholder="输入您认为合适的翻译，例如：什么是jquery?">{{ userInput }}</textarea>
+                        <i class="fa x fa-search onX"></i>
                     </div>
                     <button type="submit" class="btn btn-lg btn-primary" id="translate_button">翻译</button>
                     <a href="search/" class="btn btn-lg btn-default">搜索数据库</a>
@@ -80,54 +71,75 @@
         </ul>
     </div>
 </header>
-<main class="packages-list-container">
-    <div class="container">
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li
-            {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-
-
-        {% if not_empty %}
-        <ul class="list-group">
-            {% if searched %}
-            <strong>您输入的语句之前已经被翻译</strong>
-            {% else %}
-            <strong>您输入的语句之前没有人搜索过</strong>
-            {% endif %}
-            {% for tran in curr_trans_list %}
-            <h1>{{ tran.trans_engine }}</h1>
-            <li class="list-group-item">
-                {{ tran.trans_output }}
-                {{ tran.score }}
-                <a href="/{{ tran.id }}/">选择</a>
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <p class="navbar-text">投票选项不可用</p>
-        {% endif %}
-        <!-- </section> -->
-    </div>
-    <!--<footer id="footer" class="footer hidden-print">-->
-    <!--<div class="container">-->
-    <!--<div class="row">-->
-    <!--<div class="footer-about col-md-5 col-sm-12" id="about">-->
-    <!--<h4>关于 Atman</h4>-->
-    <!--<p>something-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--<div class="copy-right">-->
-    <!--<span>DD/MM/YYYY</span>-->
-    <!--</div>-->
-    <!--</footer>-->
+<main class="packages-list-container" id="list_results">
 </main>
-<a href="#" style="display: block;" class="pull-right">回到顶部</a>
+<a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top pull-right" role="button" data-toggle="tooltip"
+   data-placement="right"><span class="glyphicon glyphicon-chevron-up"></span></a>
+
+
+<script type="text/javascript">
+        var _hmt = _hmt || [];
+
+</script>
+<script type="text/javascript">
+        function loadSelection(target) {
+            var list = document.getElementById(target);
+            var index = list.selectedIndex;
+            return select = list[index].text;
+        }
+
+</script>
+<script>
+        $(document).ready(function(){
+            $(window).scroll(function () {
+            if ($(this).scrollTop() > 50) {
+                $('#back-to-top').fadeIn();
+            } else {
+                $('#back-to-top').fadeOut();
+            }
+        });
+        // scroll body to 0px on click
+        $('#back-to-top').click(function () {
+            $('#back-to-top').tooltip('hide');
+            $('body,html').animate({
+                scrollTop: 0
+            }, 800);
+            return false;
+        });
+
+        $('#back-to-top').tooltip('show');
+
+    });
+
+</script>
+
+<script type="text/javascript">
+        $('#search_form').on('submit', function(event){
+            event.preventDefault();
+            console.log('form submit')
+            create_results();
+        });
+        function create_results(){
+            $.ajax({
+                url: "/",
+                type: "POST",
+                data:{
+                        'userTrans': $('#user_trans').val(),
+                        'q': $('#q_search').val(),
+                        'lang': $('#lang').val(),
+                        'type': $('#type').val(),
+                        'to': $('#to').val(),
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(data) {
+                    $('#list_results').html(data)
+                }
+
+            });
+        }
+
+</script>
+
 
 </body>
 </html>
