@@ -46,10 +46,11 @@ def homepage(request):
             engines = ['google', 'baidu', 'youdao', 'bing', 'atman']
         else:
             engines = ['google', 'baidu', 'youdao', 'bing']
-        s = TransSource(trans_source=source,
-                        trans_source_lang=source_lang,
-                        trans_source_type=source_type)
+
         if not searched:
+            s = TransSource(trans_source=source,
+                            trans_source_lang=source_lang,
+                            trans_source_type=source_type)
             s.save()
         else:
             s = TransSource.objects.filter(
@@ -75,7 +76,6 @@ def homepage(request):
             r = requests.post(host, json=send_API, headers=headers)
             resp = json.loads(r.content.decode('utf-8'))
             if resp['errorCode'] == 0:
-
                 engine_target = open(engine_in, 'w')
                 if source_to == 'zh':
                     engine_target.write(" ".join(resp['data'][0]['text']))
@@ -96,6 +96,7 @@ def homepage(request):
             trans_source=source,
             trans_source_lang=source_lang,
             trans_source_type=source_type)[0].transresult_set
+        print(curr_trans_list.all())
 
         if curr_trans_list.count() != 0:
             not_empty = 1
