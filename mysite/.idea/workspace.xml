@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="29394227-b5dc-4822-a641-5dbc7f80905c" name="Default" comment="Finished adding BLEU and trans result page fixed">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/mt-output" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/multi-bleu.perl" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/reference" />
+    <list default="true" id="29394227-b5dc-4822-a641-5dbc7f80905c" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/db.sqlite3" afterPath="$PROJECT_DIR$/db.sqlite3" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/polls/views.py" afterPath="$PROJECT_DIR$/polls/views.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -440,7 +435,14 @@
       <option name="project" value="LOCAL" />
       <updated>1497359312184</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="fix">
+      <created>1497406245654</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1497406245654</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TodoView">
@@ -505,7 +507,8 @@
     <MESSAGE value="Todo: comment models and ajax" />
     <MESSAGE value="Done with Commenting" />
     <MESSAGE value="Finished adding BLEU and trans result page fixed" />
-    <option name="LAST_COMMIT_MESSAGE" value="Finished adding BLEU and trans result page fixed" />
+    <MESSAGE value="fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
