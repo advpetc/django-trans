@@ -21,21 +21,22 @@
     <caption>In the result page for {{ source }}</caption>
     <thread>
         <tr>
-            <th>排名</th>
             <th>Engine</th>
-            <th>输入语句</th>
             <th>翻译语句</th>
             <th>投票数目</th>
+            <th>翻译时间</th>
         </tr>
         <tbody>
         {% for tran in all_trans_result.all %}
+
+        {% for each in tran.transhistory_set.all %}
         <tr>
-            <th scope="row">{{ forloop.counter }}</th>
             <td>{{ tran.trans_engine }}</td>
-            <td>{{ tran.trans_source }}</td>
-            <td>{{ tran.trans_output }}</td>
-            <td>{{ tran.vote_result }}</td>
+            <td>{{ each.trans_content }}</td>
+            <td>{{ each.vote_result }}</td>
+            <td>{{ each.trans_time }}</td>
         </tr>
+        {% endfor %}
         {% endfor %}
         </tbody>
     </thread>

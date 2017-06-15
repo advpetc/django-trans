@@ -50,7 +50,6 @@
                         </select>
                         <label>目标语言：</label>
                         <select class="selectpicker" name="to" value="loadSelection('to')" id="to">
-                            <!--<option value="en">英文</option>-->
                             <option value="zh">中文</option>
                             <option value="en">英文</option>
                         </select>
@@ -71,6 +70,10 @@
         </ul>
     </div>
 </header>
+<div id="loadingdiv">{% load static %}
+    <img src="{% static 'ajax-loader.gif' %}" class="img-responsive center-block">
+    <p class="text-center">Translating...</p>
+</div>
 <main class="packages-list-container" id="list_results">
 </main>
 <a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top pull-right" role="button" data-toggle="tooltip"
@@ -137,6 +140,19 @@
 
             });
         }
+
+</script>
+
+<script>
+    var $loading = $('#loadingdiv').hide();
+    $(document)
+        .ajaxStart(function(){
+            $loading.show();
+        })
+        .ajaxStop(function(){
+            $loading.hide();
+        })
+    ;
 
 </script>
 

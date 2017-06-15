@@ -1,32 +1,62 @@
-<div class="container">
-    {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        <li
-                {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
-        </li>
-        {% endfor %}
-    </ul>
-    {% endif %}
+<div class="col-md-9">
+    <p class="search-results-count">About {{ trans_results|length }} results</p>
+    <section id="search_result_list" class="search-result-item">
+        {% for result in trans_results %}
+        <div class="list-group">
+            <div class="row">
+                <div class="col-sm-9">
+                    <h4 class="search-result-item-heading"><a href="#">{{result.trans_result.trans_source.trans_source|truncatewords:10}}</a>
+                    </h4>
+                    <p class="info">By {{ result.trans_result.trans_engine }}</p>
+                    <p>{{ result.trans_content }}</p>
+                    <!--{% for voter in result.1 %}-->
+                    <!--<p class="info">By {{ voter.trans_engine }}</p>-->
+                    <!--<p class="description">{{ voter.trans_output }}</p>-->
+                    <!--{% endfor %}-->
+                </div>
+                <div class="col-sm-3">
+                    <p class="value3 mt-sm">Votes: {{ result.vote_result }}</p>
+                    <!--{% for voter in result.1 %}-->
+                    <!--<p class="fs-mini text-muted">{{ voter.trans_engine }} : {{ voter.vote_result }}</p>-->
+                    <!--{% endfor %}-->
+                </div>
+            </div>
+        </div>
 
-
-    {% if not_empty %}
-    <ul class="list-group">
-        {% if searched %}
-        <div class="alert alert-warning">您输入的语句之前已经被翻译</div>
-        {% else %}
-        <div class="alert alert-success">您输入的语句之前没有人搜索过</div>
-        {% endif %}
-        {% for tran in curr_trans_list %}
-        <h4>{{ tran.trans_engine }}</h4>
-        <li class="list-group-item">
-            {{ tran.trans_output }}
-            <a href="/{{ tran.id }}/">选择</a>
-        </li>
         {% endfor %}
-    </ul>
-    {% else %}
-    <p class="navbar-text">投票选项不可用</p>
-    {{ "test" }} {{not_empty}}
-    {% endif %}
+        <div class="pagination">
+            <span class="step-links">
+                {% if trans_results.has_previous %}
+                <a onclick="change_page({{ trans_results.previous_page_number }})">上一页</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ trans_results.number }} of {{ trans_results.paginator.num_pages }}.
+                </span>
+                {% if trans_results.has_next %}
+                    <a onclick="change_page({{ trans_results.next_page_number }})">下一页</a>
+                {% endif %}
+            </span>
+        </div>
+    </section>
 </div>
+<script type="text/javascript">
+
+        function change_page(page){
+            $.ajax({
+                url: "/search/",
+                type: "POST",
+                data:{
+                        'page': page,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(data) {
+                    $('#show_search_results').html(data)
+                }
+
+            });
+        }
+
+
+
+</script>

@@ -1,0 +1,44 @@
+<div class="container">
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li
+                {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+
+    {% if not_empty %}
+    <table class="table table-responsive">
+        {% if searched %}
+        <div class="alert alert-warning">您输入的语句之前已经被翻译</div>
+        {% else %}
+        <div class="alert alert-success">您输入的语句之前没有人搜索过</div>
+        {% endif %}
+        <thead>
+        <tr>
+            <th>翻译结果</th>
+            <th>翻译engine</th>
+            <th>Vote</th>
+        </tr>
+        <tbody>
+        {% for tran in current_trans_list %}
+        <tr>
+            <td>{{ tran.trans_content }}</td>
+            <td>{{ tran.trans_result.trans_engine }}
+                {% if tran.trans_result.trans_engine == "atman" %}
+                : {{ source_type }}
+                {% endif %}
+            </td>
+            <td><a href="/{{ tran.id }}/">选择</a>
+        </tr>
+        {% endfor %}
+        </tbody>
+        </thead>
+    </table>
+    {% else %}
+    <p class="navbar-text">投票选项不可用</p>
+    {% endif %}
+</div>
