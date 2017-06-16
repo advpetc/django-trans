@@ -1,62 +1,46 @@
-<div class="col-md-9">
-    <p class="search-results-count">About {{ trans_results|length }} results</p>
-    <section id="search_result_list" class="search-result-item">
-        {% for result in trans_results %}
-        <div class="list-group">
-            <div class="row">
-                <div class="col-sm-9">
-                    <h4 class="search-result-item-heading"><a href="#">{{result.trans_result.trans_source.trans_source|truncatewords:10}}</a>
-                    </h4>
-                    <p class="info">By {{ result.trans_result.trans_engine }}</p>
-                    <p>{{ result.trans_content }}</p>
-                    <!--{% for voter in result.1 %}-->
-                    <!--<p class="info">By {{ voter.trans_engine }}</p>-->
-                    <!--<p class="description">{{ voter.trans_output }}</p>-->
-                    <!--{% endfor %}-->
-                </div>
-                <div class="col-sm-3">
-                    <p class="value3 mt-sm">Votes: {{ result.vote_result }}</p>
-                    <!--{% for voter in result.1 %}-->
-                    <!--<p class="fs-mini text-muted">{{ voter.trans_engine }} : {{ voter.vote_result }}</p>-->
-                    <!--{% endfor %}-->
-                </div>
-            </div>
-        </div>
+<table class="table table-responsive">
+    <caption class="text-center">一共 {{ all_results|length }} 条结果</caption>
+    <thead>
+    <tr>
+        <th>搜索engine</th>
+        <th>搜索内容</th>
+        <th>翻译结果</th>
+        <th>得票</th>
+    </tr>
+    <tbody>
+    {% for all_results in trans_results %}
+    {% for result in all_results %}
 
+    {% if result.trans_result.trans_engine == search_engine %}
+    <tr class="success">
+        <td>{{result.trans_result.trans_engine}}</td>
+        <td>{{result.trans_result.trans_source.trans_source|truncatewords:10}}</td>
+        <td>{{result.trans_content|truncatewords:10}}</td>
+        <td>{{result.vote_result}}</td>
+    </tr>
+    {% else %}
+    <tr>
+        <td>{{result.trans_result.trans_engine}}</td>
+        <td>{{result.trans_result.trans_source.trans_source|truncatewords:10}}</td>
+        <td>{{result.trans_content|truncatewords:10}}</td>
+        <td>{{result.vote_result}}</td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+    </tbody>
+    </thead>
         {% endfor %}
+</table>
         <div class="pagination">
             <span class="step-links">
                 {% if trans_results.has_previous %}
-                <a onclick="change_page({{ trans_results.previous_page_number }})">上一页</a>
+                <button class="last_page">上一页</button>
                 {% endif %}
-
                 <span class="current">
                     Page {{ trans_results.number }} of {{ trans_results.paginator.num_pages }}.
                 </span>
                 {% if trans_results.has_next %}
-                    <a onclick="change_page({{ trans_results.next_page_number }})">下一页</a>
+                <button class="next_page">下一页</button>
                 {% endif %}
             </span>
         </div>
-    </section>
-</div>
-<script type="text/javascript">
-
-        function change_page(page){
-            $.ajax({
-                url: "/search/",
-                type: "POST",
-                data:{
-                        'page': page,
-                        'csrfmiddlewaretoken': '{{ csrf_token }}'
-                },
-                success: function(data) {
-                    $('#show_search_results').html(data)
-                }
-
-            });
-        }
-
-
-
-</script>

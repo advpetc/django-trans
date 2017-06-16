@@ -44,7 +44,7 @@
 
     </script>
 </head>
-<body>
+<body id="main_body">
 <div class="container">
     <div class="row">
         <div class="panel-group">
@@ -89,17 +89,30 @@
     <img src="{% static 'ajax-loader.gif' %}" class="img-responsive center-block">
     <p class="text-center">Searching...</p>
 </div>
-<div class="container" id="show_search_results">
-
+<div class="col-md-10 col-md-offset-1" id="show_search_results">
 </div>
 
 
 <script type="text/javascript">
+        var curr_page = 1;
         $('#search_form').on('submit', function(event){
             event.preventDefault();
             console.log('form submit')
-            change_page(1);
+            change_page(curr_page);
         });
+        $('.col-md-10').on("click", ".last_page", function(event) {
+            event.preventDefault();
+            curr_page -= 1;
+            change_page(curr_page);
+        });
+        $('.col-md-10').on("click", ".next_page", function(event) {
+            event.preventDefault();
+            console.log('next page');
+
+            curr_page += 1;
+            change_page(curr_page);
+        });
+
         function change_page(page){
             $.ajax({
                 url: "/search/",

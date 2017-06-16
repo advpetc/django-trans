@@ -66,6 +66,21 @@
 </form>
 <a href="/">Go back to home</a>
 </body>
+<script type="text/javascript">
+    $('#comment_form').on('submit', function(event) {
+        event.preventDefault();
+        show_msg();
+    })
+    function show_msg(){
+        $.ajax({
+            url: "/save/";
+            type: "POST",
+            data: {
+                "comment": $('#comment_area').val();
+            }
+        })
+    }
 
+</script>
 
 </html>

@@ -22,5 +22,5 @@ urlpatterns = [
         r'^(?P<voteresult_id>[0-9]+)/$',
         views.result,
         name='result'
-    ),
+    )
 ]

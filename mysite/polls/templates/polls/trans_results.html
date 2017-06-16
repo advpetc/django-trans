@@ -38,6 +38,9 @@
         </tbody>
         </thead>
     </table>
+    {% for score in out_score %}
+    <p>{{score}}</p>
+    {% endfor %}
     {% else %}
     <p class="navbar-text">投票选项不可用</p>
     {% endif %}

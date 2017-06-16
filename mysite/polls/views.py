@@ -9,6 +9,7 @@ import datetime
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 import subprocess
+from subprocess import PIPE
 import shlex
 
 
@@ -18,7 +19,7 @@ def homepage(request):
     """
     if request.method == 'POST':
         user_trans = request.POST['userTrans']
-        command = shlex.split('/usr/bin/perl multi-bleu.perl reference < mt-output')
+        command = shlex.split('/usr/bin/perl multi-bleu.perl reference')
         user_in = 'reference'
         engine_in = 'mt-output'
 
@@ -55,6 +56,7 @@ def homepage(request):
                                                           trans_source_type=source_type,
                                                           trans_output_lang=source_to)
         current_trans_list = []
+        out_score = []
         for engine in engines:
             send = {
                 'type': engine,
@@ -72,7 +74,7 @@ def homepage(request):
             }
             r = requests.post(host, json=send, headers=headers)
             resp = json.loads(r.content.decode('utf-8'))
-            # data = resp['data'][0]['text']
+
             if resp['errorCode'] == 0:
                 data = resp['data'][0]['text']
                 engine_target = open(engine_in, 'w')
@@ -83,8 +85,10 @@ def homepage(request):
                 engine_target.close()
                 if not user_trans == "":
                     user = True
-                    with open(user_in) as input_file:
+                    with open(engine_in, 'r') as input_file:
+
                         score = subprocess.check_output(command, stdin=input_file)
+                        out_score.append(score)
                 else:
                     user = False
 
@@ -132,16 +136,13 @@ def homepage(request):
             not_empty = 1
         else:
             not_empty = 0
-
         context = {
             'current_trans_list': current_trans_list,
             'not_empty': not_empty,
             'searched': searched,
-            'source_type': source_type
+            'source_type': source_type,
+            'out_score': out_score
         }
-        # t = get_template('polls/trans_results.html')
-        # html = t.render(RequestContext(request, context))
-        # return HttpResponse(html)
         return render(request, 'polls/trans_results.html', context)
     else:
         return render(request, 'polls/homepage.html')
@@ -168,7 +169,8 @@ def result(request, voteresult_id):
         )
         selected_trans.save()
         messages.add_message(request, messages.SUCCESS, "successfully saved your comment!")
-        return HttpResponseRedirect(reverse('polls:result', args=(voteresult_id,)))
+        return render(request, 'polls/result.html')
+        # return HttpResponseRedirect(reverse('polls:result', args=(voteresult_id,)))
 
 
 def search(request):
@@ -176,40 +178,32 @@ def search(request):
     Go to search interface
     """
     if request.method == 'POST':
-
         results = TransResult.objects.filter(trans_engine=request.POST['engine'])
         all_his = []
+        jump_in = []
         for each_result in results:
-            each_his = TransHistory.objects.filter(trans_result=each_result,
-                                                   trans_time__range=[datetime.datetime.strptime(
-                                                       request.POST['start_time'], "%Y-%m-%d"),
-                                                       datetime.datetime.strptime(
-                                                           request.POST['end_time'], "%Y-%m-%d")])
-            all_his += each_his
+            all_his_from = TransHistory.objects.filter(trans_result=each_result,
+                                                       trans_time__range=[datetime.datetime.strptime(
+                                                           request.POST['start_time'], "%Y-%m-%d"),
+                                                           datetime.datetime.strptime(
+                                                               request.POST['end_time'], "%Y-%m-%d")])
 
+            for each_his in all_his_from:
+                all_other_result = TransResult.objects.filter(trans_source=each_result.trans_source
+                                                              ).exclude(trans_engine=request.POST['engine'])
+                tie_with = []
+                tie_with.append(each_his)
+                for each_other_result in all_other_result:
+                    all_other_his = TransHistory.objects.filter(trans_result=each_other_result)
+                    tie_with += all_other_his
+                    # all_other_result = TransResult.objects.filter(trans_source=each_result.trans_source
+                    #                                               ).exclude(trans_engine=request.POST['engine'])
+                    # for each_other_result in all_other_result:
+                    #     all_his += TransHistory.objects.filter(trans_result=each_other_result)
+                all_his.append(tie_with)
+                jump_in += tie_with
 
-
-            # result_list = []
-            # for each_result in results:
-            #
-            #     result_list += TransHistory.objects.filter(trans_result=each_result,
-            #                                                trans_time__range=
-            #                                                [datetime.datetime.strptime(
-            #                                                    request.POST['start_time'], "%Y-%m-%d"),
-            # datetime.datetime.strptime(
-            #     request.POST['end_time'], "%Y-%m-%d")])
-        #
-        # # result_list.order_by('vote_result')
-        # jump_in = []
-        # for each_one in result_list:
-        #     source = each_one.transresult.transsource.trans_source
-        #     all_trans_results = source.transresult_set.transhistory_set
-        #     other_trans_results = all_trans_results.exclude(trans_engine=request.POST['engine'])
-        #
-        #     snip_in = [each_one, other_trans_results]
-        #     jump_in.append(snip_in)
-
-        paginator = Paginator(all_his, 3)  # Show 25 results per page
+        paginator = Paginator(all_his, 5)  # Show 25 results per page
 
         page = request.POST['page']
         try:
@@ -222,11 +216,9 @@ def search(request):
             his = paginator.page(paginator.num_pages)
 
         context = {
-            'trans_results': his
-        }
-        # t = get_template('polls/search_results.html')
-        # html = t.render(RequestContext(request, context))
-        # return HttpResponse(html)
+            'search_engine': request.POST['engine'],
+            'all_results': jump_in,
+            'trans_results': his}
         return render(request, 'polls/search_results.html', context)
     else:
         return render(request, 'polls/search.html')
