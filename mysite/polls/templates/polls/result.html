@@ -10,11 +10,6 @@
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
           integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-            crossorigin="anonymous"></script>
 </head>
 <body>
 <table class="table">
@@ -56,7 +51,7 @@
 <form id="comment_form" class="search-wraper" role="search" action="/{{ id }}/" method="POST">{% csrf_token %}
 
     <div class="form-group">
-        <textarea id="comment_area" maxlength="3000" type="text" name="comment" class="form-control" rows="10" cols="10"
+        <textarea id="comment_area" maxlength="3000" type="text" name="comment" class="form-control" rows=5 cols=20
                   placeholder="输入您对翻译结果的建议">{{ comment }}</textarea>
         <i class="fa x fa-search onX"></i>
     </div>
@@ -66,21 +61,4 @@
 </form>
 <a href="/">Go back to home</a>
 </body>
-<script type="text/javascript">
-    $('#comment_form').on('submit', function(event) {
-        event.preventDefault();
-        show_msg();
-    })
-    function show_msg(){
-        $.ajax({
-            url: "/save/";
-            type: "POST",
-            data: {
-                "comment": $('#comment_area').val();
-            }
-        })
-    }
-
-</script>
-
 </html>

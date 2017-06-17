@@ -1,6 +1,4 @@
 from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponseRedirect
-from django.urls import reverse
 from django.utils import timezone
 import requests
 from .models import TransSource, TransResult, TransHistory, User
@@ -9,7 +7,6 @@ import datetime
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 import subprocess
-from subprocess import PIPE
 import shlex
 
 
@@ -31,9 +28,9 @@ def homepage(request):
 
         user_target = open(user_in, 'w')
         if source_to == 'zh':
-            user_target.write(" ".join(user_trans))
+            user_target.write(" ".join(user_trans.strip()))
         else:
-            user_target.write(user_trans)
+            user_target.write(user_trans.strip())
         user_target.close()
 
         if source_lang == 'en' and source_to == 'zh':
@@ -170,7 +167,6 @@ def result(request, voteresult_id):
         selected_trans.save()
         messages.add_message(request, messages.SUCCESS, "successfully saved your comment!")
         return render(request, 'polls/result.html')
-        # return HttpResponseRedirect(reverse('polls:result', args=(voteresult_id,)))
 
 
 def search(request):
