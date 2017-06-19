@@ -10,139 +10,155 @@ import subprocess
 import shlex
 
 
+def translation(request, user_trans, source, source_lang, source_type, source_to):
+    command = shlex.split('/usr/bin/perl multi-bleu.perl reference')
+    user_in = 'reference'
+    engine_in = 'mt-output'
+
+    user_target = open(user_in, 'w')
+    if source_to == 'zh':
+        user_target.write(" ".join(user_trans.strip()))
+    else:
+        user_target.write(user_trans.strip())
+    user_target.close()
+
+    if source_lang == 'en' and source_to == 'zh':
+        engines = ['google', 'baidu', 'youdao', 'bing', 'atman']
+    else:
+        engines = ['google', 'baidu', 'youdao', 'bing']
+
+    if TransSource.objects.filter(
+            trans_source=source,
+            trans_source_lang=source_lang,
+            trans_source_type=source_type,
+            trans_output_lang=source_to
+    ).exists():
+        searched = True
+    else:
+        searched = False
+
+    temp, created = TransSource.objects.get_or_create(trans_source=source,
+                                                      trans_source_lang=source_lang,
+                                                      trans_source_type=source_type,
+                                                      trans_output_lang=source_to)
+    current_trans_list = []
+    out_score = []
+    for engine in engines:
+        send = {
+            'type': engine,
+            'from': source_lang,
+            'to': source_to,
+            'q': [{'id': 1, 'text': source}],
+            'extra': {
+                'domain': source_type,
+            }
+        }
+        host = "http://translate.atman360.com/third_translate"
+        headers = {
+            'content-type': 'application/json;charset=utf-8',
+            'accept': 'application/json'
+        }
+        r = requests.post(host, json=send, headers=headers)
+        resp = json.loads(r.content.decode('utf-8'))
+
+        if resp['errorCode'] == 0:
+            data = resp['data'][0]['text']
+            engine_target = open(engine_in, 'w')
+            if source_to == 'zh':
+                engine_target.write(" ".join(data))
+            else:
+                engine_target.write(data)
+            engine_target.close()
+            if not user_trans == "":
+                user = True
+                with open(engine_in, 'r') as input_file:
+
+                    score = subprocess.check_output(command, stdin=input_file)
+                    out_score.append(score)
+            else:
+                user = False
+
+            if searched:
+                result_each = TransResult.objects.filter(trans_source=temp,
+                                                         trans_engine=engine)[0]
+                if not TransHistory.objects.filter(trans_result=result_each,
+                                                   trans_content=data).exists():
+
+                    his = TransHistory.objects.create(trans_result=result_each,
+                                                      trans_content=data,
+                                                      trans_time=str(timezone.now()))
+                    current_trans_list.append(his)
+                    if not user:
+                        User.objects.create(trans_his=his)
+                    else:
+                        User.objects.create(trans_his=his,
+                                            score=score,
+                                            user_trans=user_trans)
+                else:
+                    pre_his = TransHistory.objects.filter(trans_result=result_each,
+                                                          trans_content=data)[0]
+                    current_trans_list.append(pre_his)
+                    if user:
+                        User.objects.create(trans_his=pre_his,
+                                            score=score,
+                                            user_trans=user_trans)
+            else:
+                new_result = TransResult.objects.create(trans_source=temp,
+                                                        trans_engine=engine)
+                new_his = TransHistory.objects.create(trans_result=new_result,
+                                                      trans_content=data,
+                                                      trans_time=str(timezone.now()))
+
+                current_trans_list.append(new_his)
+                if user:
+                    User.objects.create(trans_his=new_his,
+                                        score=score,
+                                        user_trans=user_trans)
+
+        else:
+            messages.add_message(request, messages.ERROR, resp['errorMessage'] + " from " + engine)
+
+    if current_trans_list.count != 0:
+        not_empty = 1
+    else:
+        not_empty = 0
+    context = {
+        'current_trans_list': current_trans_list,
+        'not_empty': not_empty,
+        'searched': searched,
+        'source_type': source_type,
+        'out_score': out_score
+    }
+    return context
+
+
 def homepage(request):
     """
     Display the homepage
     """
     if request.method == 'POST':
         user_trans = request.POST['userTrans']
-        command = shlex.split('/usr/bin/perl multi-bleu.perl reference')
-        user_in = 'reference'
-        engine_in = 'mt-output'
-
         source = request.POST['q'].strip()
         source_lang = request.POST['lang']
         source_type = request.POST['type']
-
         source_to = request.POST['to']
 
-        user_target = open(user_in, 'w')
-        if source_to == 'zh':
-            user_target.write(" ".join(user_trans.strip()))
-        else:
-            user_target.write(user_trans.strip())
-        user_target.close()
-
-        if source_lang == 'en' and source_to == 'zh':
-            engines = ['google', 'baidu', 'youdao', 'bing', 'atman']
-        else:
-            engines = ['google', 'baidu', 'youdao', 'bing']
-
-        if TransSource.objects.filter(
-                trans_source=source,
-                trans_source_lang=source_lang,
-                trans_source_type=source_type,
-                trans_output_lang=source_to
-        ).exists():
-            searched = True
-        else:
-            searched = False
-
-        temp, created = TransSource.objects.get_or_create(trans_source=source,
-                                                          trans_source_lang=source_lang,
-                                                          trans_source_type=source_type,
-                                                          trans_output_lang=source_to)
-        current_trans_list = []
-        out_score = []
-        for engine in engines:
-            send = {
-                'type': engine,
-                'from': source_lang,
-                'to': source_to,
-                'q': [{'id': 1, 'text': source}],
-                'extra': {
-                    'domain': source_type,
-                }
-            }
-            host = "http://translate.atman360.com/third_translate"
-            headers = {
-                'content-type': 'application/json;charset=utf-8',
-                'accept': 'application/json'
-            }
-            r = requests.post(host, json=send, headers=headers)
-            resp = json.loads(r.content.decode('utf-8'))
-
-            if resp['errorCode'] == 0:
-                data = resp['data'][0]['text']
-                engine_target = open(engine_in, 'w')
-                if source_to == 'zh':
-                    engine_target.write(" ".join(data))
-                else:
-                    engine_target.write(data)
-                engine_target.close()
-                if not user_trans == "":
-                    user = True
-                    with open(engine_in, 'r') as input_file:
-
-                        score = subprocess.check_output(command, stdin=input_file)
-                        out_score.append(score)
-                else:
-                    user = False
-
-                if searched:
-                    result_each = TransResult.objects.filter(trans_source=temp,
-                                                             trans_engine=engine)[0]
-                    if not TransHistory.objects.filter(trans_result=result_each,
-                                                       trans_content=data).exists():
-
-                        his = TransHistory.objects.create(trans_result=result_each,
-                                                          trans_content=data,
-                                                          trans_time=str(timezone.now()))
-                        current_trans_list.append(his)
-                        if not user:
-                            User.objects.create(trans_his=his)
-                        else:
-                            User.objects.create(trans_his=his,
-                                                score=score,
-                                                user_trans=user_trans)
-                    else:
-                        pre_his = TransHistory.objects.filter(trans_result=result_each,
-                                                              trans_content=data)[0]
-                        current_trans_list.append(pre_his)
-                        if user:
-                            User.objects.create(trans_his=pre_his,
-                                                score=score,
-                                                user_trans=user_trans)
-                else:
-                    new_result = TransResult.objects.create(trans_source=temp,
-                                                            trans_engine=engine)
-                    new_his = TransHistory.objects.create(trans_result=new_result,
-                                                          trans_content=data,
-                                                          trans_time=str(timezone.now()))
-
-                    current_trans_list.append(new_his)
-                    if user:
-                        User.objects.create(trans_his=new_his,
-                                            score=score,
-                                            user_trans=user_trans)
-
-            else:
-                messages.add_message(request, messages.ERROR, resp['errorMessage'] + " from " + engine)
-
-        if current_trans_list.count != 0:
-            not_empty = 1
-        else:
-            not_empty = 0
-        context = {
-            'current_trans_list': current_trans_list,
-            'not_empty': not_empty,
-            'searched': searched,
-            'source_type': source_type,
-            'out_score': out_score
-        }
+        context = translation(request, user_trans, source, source_lang, source_type, source_to)
         return render(request, 'polls/trans_results.html', context)
     else:
         return render(request, 'polls/homepage.html')
+
+
+def share(request, q, userTrans, lang, type, to):
+    if userTrans == "null":
+        userTrans = ""
+    context = translation(request, userTrans, q, lang, type, to)
+    context['q'] = q
+    context['userTrans'] = userTrans
+    context['lang'] = lang
+    context['type'] = type
+    context['to'] = to
+    return render(request, 'polls/share.html', context)
 
 
 def result(request, voteresult_id):

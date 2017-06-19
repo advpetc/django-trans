@@ -84,10 +84,12 @@ DATABASES = {
     },
 
     'postgresql': {
-        'NAME': 'app_data',
-        'ENGINE': 'django.db.backends.postgresql',
-        'USER': 'postgres_user',
-        'PASSWORD': 's3krit'
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "transvote",
+        "USER": "advpetc",
+        "PASSWORD": "ZAQxsw12345",
+        "HOST": "localhost",
+        "PORT": "",
     }
 }
 

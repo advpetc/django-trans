@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="gr__getbootstrap_com">
+<head>
+    <meta charset="utf-8">
+    <title>分享</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+</head>
+<body>
+<div class="container-fluid">
+    <h2>分享</h2>
+    <div class="page-header">
+        <p>翻译原文: {{q}}</p>
+        <p>用户翻译：{{userTrans}}</p>
+        <p>用户输入语言: {{lang}}</p>
+        <p>类别：{{type}}</p>
+        <p>目标语言：{{to}}</p>
+    </div>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li
+                {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+
+    {% if not_empty %}
+    <table class="table table-responsive">
+        {% if searched %}
+        <div class="alert alert-warning">本次翻译之前已被翻译</div>
+        {% else %}
+        <div class="alert alert-success">本次翻译没有被翻译过</div>
+        {% endif %}
+        <thead>
+        <tr>
+            <th>翻译结果</th>
+            <th>Vote</th>
+        </tr>
+        <tbody>
+        {% for tran in current_trans_list %}
+        <tr>
+            <td>{{ tran.trans_content }}</td>
+            <td><a href="/{{ tran.id }}/">选择</a>
+        </tr>
+        {% endfor %}
+        </tbody>
+        </thead>
+    </table>
+    {% for score in out_score %}
+    <p>{{score}}</p>
+    {% endfor %}
+    {% else %}
+    <p class="navbar-text">投票选项不可用</p>
+    {% endif %}
+</div>
+</body>
+<a href="/">回到翻译界面</a>
+</html>

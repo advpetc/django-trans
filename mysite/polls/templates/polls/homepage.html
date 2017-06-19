@@ -33,13 +33,13 @@
                     <div class="form-group">
                         <textarea maxlength="3000" type="text" name="q" class="form-control" rows="3"
                                   cols="20" id="q_search"
-                                  placeholder="搜索翻译文字，例如：what is jquery?" required>{{ source }}</textarea>
+                                  placeholder="搜索翻译文字，例如：what is jquery?" required></textarea>
                         <i class="fa x fa-search onX"></i>
                     </div>
                     <div class="form-group">
                         <textarea maxlength="3000" type="text" name="userTrans" class="form-control" rows="3"
                                   cols="20" id="user_trans"
-                                  placeholder="输入您认为合适的翻译，例如：什么是jquery?">{{ userInput }}</textarea>
+                                  placeholder="输入您认为合适的翻译，例如：什么是jquery?"></textarea>
                         <i class="fa x fa-search onX"></i>
                     </div>
                     <button type="submit" class="btn btn-lg btn-primary" id="translate_button">翻译</button>
@@ -79,10 +79,12 @@
     <p class="text-center">Translating...</p>
 </div>
 <main class="packages-list-container" id="list_results">
+
 </main>
 
 <a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top pull-right" role="button" data-toggle="tooltip"
    data-placement="right"><span class="glyphicon glyphicon-chevron-up"></span></a>
+
 
 <script type="text/javascript">
         var _hmt = _hmt || [];
@@ -125,6 +127,27 @@
             event.preventDefault();
             console.log('form submit')
             create_results();
+            var holder = "null";
+            if ($('#user_trans').val()) {
+                holder = $('#user_trans').val();
+            }
+            var url = $('#q_search').val()
+            + "/" + holder + "/" +
+            $('#lang').val() + "/" + $('#type').val()
+            + "/" + $('#to').val();
+            // window.location.assign(url);
+            var state = {
+                title: "title",
+                url: url,
+                content: $('body').html(),
+                prev: window.location.href
+            }
+            if (!history.state) {
+                window.history.pushState(state, null, url);
+            }
+
+
+
         });
         function create_results(){
             $.ajax({
@@ -140,6 +163,16 @@
                 },
                 success: function(data) {
                     $('#list_results').html(data)
+                    // var holder = "null";
+                    // if ($('#user_trans').val()) {
+                    //     holder = $('#user_trans').val();
+                    // }
+                    // var url = $('#q_search').val()
+                    // + "/" + holder + "/" +
+                    // $('#lang').val() + "/" + $('#type').val()
+                    // + "/" + $('#to').val();
+                    // window.history.replaceState({page: 1}, null, url);
+                    // window.history.go(-1);
                 }
 
             });

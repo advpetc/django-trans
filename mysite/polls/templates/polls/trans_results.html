@@ -20,18 +20,12 @@
         <thead>
         <tr>
             <th>翻译结果</th>
-            <th>翻译engine</th>
             <th>Vote</th>
         </tr>
         <tbody>
         {% for tran in current_trans_list %}
         <tr>
             <td>{{ tran.trans_content }}</td>
-            <td>{{ tran.trans_result.trans_engine }}
-                {% if tran.trans_result.trans_engine == "atman" %}
-                : {{ source_type }}
-                {% endif %}
-            </td>
             <td><a href="/{{ tran.id }}/">选择</a>
         </tr>
         {% endfor %}
