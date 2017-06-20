@@ -68,7 +68,6 @@
     </div>
     <div class="mostused-keywords well well-sm text-center hidden-xs hidden-sm">
         <!-- Go to www.addthis.com/dashboard to customize your tools -->
-        <div class="addthis_inline_share_toolbox"></div>
         <ul class="list-inline">
             <li>选择你认为最好的翻译，点击"选择"按钮进行选择</li>
         </ul>
@@ -78,7 +77,7 @@
     <img src="{% static 'ajax-loader.gif' %}" class="img-responsive center-block">
     <p class="text-center">Translating...</p>
 </div>
-<main class="packages-list-container" id="list_results">
+<main id="list_results">
 
 </main>
 
@@ -127,24 +126,24 @@
             event.preventDefault();
             console.log('form submit')
             create_results();
-            var holder = "null";
-            if ($('#user_trans').val()) {
-                holder = $('#user_trans').val();
-            }
-            var url = $('#q_search').val()
-            + "/" + holder + "/" +
-            $('#lang').val() + "/" + $('#type').val()
-            + "/" + $('#to').val();
-            // window.location.assign(url);
-            var state = {
-                title: "title",
-                url: url,
-                content: $('body').html(),
-                prev: window.location.href
-            }
-            if (!history.state) {
-                window.history.pushState(state, null, url);
-            }
+            // var holder = "null";
+            // if ($('#user_trans').val()) {
+            //     holder = $('#user_trans').val();
+            // }
+            // var url = $('#q_search').val()
+            // + "/" + holder + "/" +
+            // $('#lang').val() + "/" + $('#type').val()
+            // + "/" + $('#to').val();
+            // // window.location.assign(url);
+            // var state = {
+            //     title: "title",
+            //     url: url,
+            //     content: $('body').html(),
+            //     prev: window.location.href
+            // }
+            // if (!history.state) {
+            //     window.history.replaceState(state, null, url);
+            // }
 
 
 
@@ -192,9 +191,6 @@
     ;
 
 </script>
-
-<!-- Go to www.addthis.com/dashboard to customize your tools -->
-<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5944c1871a01ca2f"></script>
 
 </body>
 </html>

@@ -13,16 +13,20 @@
 
     {% if result.trans_result.trans_engine == search_engine %}
     <tr class="success">
+        {% if result.trans_result.trans_engine == "atman" %}
+        <td>{{result.trans_result.trans_engine}} : {{result.trans_result.trans_source.trans_source_type}}</td>
+        {% else %}
         <td>{{result.trans_result.trans_engine}}</td>
-        <td>{{result.trans_result.trans_source.trans_source|truncatewords:10}}</td>
-        <td>{{result.trans_content|truncatewords:10}}</td>
+        {% endif %}
+        <td>{{result.trans_result.trans_source.trans_source}}</td>
+        <td>{{result.trans_content}}</td>
         <td>{{result.vote_result}}</td>
     </tr>
     {% else %}
     <tr>
         <td>{{result.trans_result.trans_engine}}</td>
-        <td>{{result.trans_result.trans_source.trans_source|truncatewords:10}}</td>
-        <td>{{result.trans_content|truncatewords:10}}</td>
+        <td>{{result.trans_result.trans_source.trans_source}}</td>
+        <td>{{result.trans_content}}</td>
         <td>{{result.vote_result}}</td>
     </tr>
     {% endif %}

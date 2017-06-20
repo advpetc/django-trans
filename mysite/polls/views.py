@@ -8,6 +8,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 import subprocess
 import shlex
+import random
 
 
 def translation(request, user_trans, source, source_lang, source_type, source_to):
@@ -43,6 +44,7 @@ def translation(request, user_trans, source, source_lang, source_type, source_to
                                                       trans_output_lang=source_to)
     current_trans_list = []
     out_score = []
+    random.shuffle(engines)
     for engine in engines:
         send = {
             'type': engine,
@@ -149,16 +151,12 @@ def homepage(request):
         return render(request, 'polls/homepage.html')
 
 
-def share(request, q, userTrans, lang, type, to):
-    if userTrans == "null":
-        userTrans = ""
-    context = translation(request, userTrans, q, lang, type, to)
-    context['q'] = q
-    context['userTrans'] = userTrans
-    context['lang'] = lang
-    context['type'] = type
-    context['to'] = to
-    return render(request, 'polls/share.html', context)
+def vote(request, voteresult_id):
+    vote_item = get_object_or_404(TransHistory, pk=voteresult_id)
+    vote_item.vote_result += 1
+    vote_item.vote_time = timezone.now()
+    vote_item.save()
+    return render(request, 'polls/confirm.html', {'vote_item': vote_item})
 
 
 def result(request, voteresult_id):
@@ -166,23 +164,24 @@ def result(request, voteresult_id):
     show result page
     """
     selected_trans = get_object_or_404(TransHistory, pk=voteresult_id)
+
+    source = selected_trans.trans_result.trans_source
+    all_trans_result = source.transresult_set
     try:
         comment = request.POST['comment']
     except KeyError:
-        selected_trans.vote_result += 1
-        selected_trans.vote_time = timezone.now()
-        selected_trans.save()
-        source = selected_trans.trans_result.trans_source
-        all_trans_result = source.transresult_set
-        return render(request, 'polls/result.html', {'all_trans_result': all_trans_result, 'id': voteresult_id,
-                                                     'source': source.trans_source})
+
+        return render(request, 'polls/result.html', {'all_trans_result': all_trans_result,
+                                                     'source': source.trans_source, 'not_submitted': True})
     else:
         selected_trans.comment_set.create(
             comment=comment,
         )
         selected_trans.save()
         messages.add_message(request, messages.SUCCESS, "successfully saved your comment!")
-        return render(request, 'polls/result.html')
+        return render(request, 'polls/result.html', {'all_trans_result': all_trans_result,
+                                                     'source': source.trans_source,
+                                                     'not_submitted': False})
 
 
 def search(request):

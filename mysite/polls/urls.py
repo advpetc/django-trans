@@ -20,13 +20,13 @@ urlpatterns = [
     # /1
     url(
         r'^(?P<voteresult_id>[0-9]+)/$',
+        views.vote,
+        name='vote'
+    ),
+    url(
+        r'^result/(?P<voteresult_id>[0-9]+)/$',
         views.result,
         name='result'
-    ),
-
-    url(
-        r'^(?P<q>[^/]+)/(?P<userTrans>[^/]+)/(?P<lang>[^/]+)/(?P<type>[^/]+)/(?P<to>[^/]+)/$',
-        views.share,
-        name="share"
     )
+
 ]

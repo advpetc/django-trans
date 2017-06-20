@@ -11,7 +11,9 @@
 
 
     {% if not_empty %}
-    <table class="table table-responsive">
+    <button type="button" name="button" id="btnHide">显示翻译Engines</button>
+    <a href="result/{{ current_trans_list.0.id }}/">直接查看结果</a>
+    <table class="table">
         {% if searched %}
         <div class="alert alert-warning">您输入的语句之前已经被翻译</div>
         {% else %}
@@ -20,12 +22,17 @@
         <thead>
         <tr>
             <th>翻译结果</th>
+            <th>Engine</th>
             <th>Vote</th>
         </tr>
         <tbody>
         {% for tran in current_trans_list %}
         <tr>
             <td>{{ tran.trans_content }}</td>
+            {% if tran.trans_result.trans_engine == "atman" %}
+            <td>{{ tran.trans_result.trans_engine }} : {{ tran.trans_result.trans_source.trans_source_type }}</td>
+            {% endif %}
+            <td>{{ tran.trans_result.trans_engine }}</td>
             <td><a href="/{{ tran.id }}/">选择</a>
         </tr>
         {% endfor %}
@@ -39,3 +46,19 @@
     <p class="navbar-text">投票选项不可用</p>
     {% endif %}
 </div>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('td:nth-child(2),th:nth-child(2)').hide();
+    var flag = true;
+        $('#btnHide').click(function() {
+            // $('td:nth-child(2)').hide();
+            // if your table has header(th), use this
+            if (flag) {
+                $('td:nth-child(2),th:nth-child(2)').show();
+                flag = false;
+            }
+            $('td:nth-child(2),th:nth-child(2)').hide();
+        });
+    });
+
+</script>

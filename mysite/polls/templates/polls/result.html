@@ -10,13 +10,18 @@
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
           integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!-- Go to www.addthis.com/dashboard to customize your tools -->
+    <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5944c1871a01ca2f"></script>
+
 </head>
 <body>
 <div class="col-md-9" role="main">
     <table class="table">
-        <p class="lead text-center">In the result page for
+        <p class="lead text-center">In the result page for:</p>
+        <p class="lead">
             <mark>{{ source }}</mark>
         </p>
+        <div class="addthis_inline_share_toolbox"></div>
         <thread>
             <tr>
                 <th>Engine</th>
@@ -29,7 +34,11 @@
 
             {% for each in tran.transhistory_set.all %}
             <tr>
+                {% if tran.trans_engine == "atman" %}
+                <td>{{ tran.trans_engine }} : {{ tran.trans_source.trans_source_type }}</td>
+                {% else %}
                 <td>{{ tran.trans_engine }}</td>
+                {% endif %}
                 <td>{{ each.trans_content }}</td>
                 <td>{{ each.vote_result }}</td>
                 <td>{{ each.trans_time }}</td>
@@ -52,6 +61,7 @@
         </ul>
         {% endif %}
     </div>
+    {% if not_submitted %}
     <form id="comment_form" class="search-wraper" role="search" action="/{{ id }}/" method="POST">{% csrf_token %}
 
         <div class="form-group">
@@ -60,11 +70,11 @@
                           placeholder="输入您对翻译结果的建议">{{ comment }}</textarea>
             <i class="fa x fa-search onX"></i>
         </div>
-
         <button type="submit" class="btn btn-success btn-circle btn-xl"><i class="glyphicon glyphicon-link"></i>Save
             comment
         </button>
     </form>
+    {% endif %}
     <a href="/">Go back to home</a>
 </div>
 </body>
