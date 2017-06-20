@@ -13,11 +13,8 @@
 
     {% if result.trans_result.trans_engine == search_engine %}
     <tr class="success">
-        {% if result.trans_result.trans_engine == "atman" %}
-        <td>{{result.trans_result.trans_engine}} : {{result.trans_result.trans_source.trans_source_type}}</td>
-        {% else %}
+
         <td>{{result.trans_result.trans_engine}}</td>
-        {% endif %}
         <td>{{result.trans_result.trans_source.trans_source}}</td>
         <td>{{result.trans_content}}</td>
         <td>{{result.vote_result}}</td>
@@ -37,6 +34,7 @@
 </table>
         <div class="pagination">
             <span class="step-links">
+                <button type="button" name="first_page">第一页</button>
                 {% if trans_results.has_previous %}
                 <button class="last_page">上一页</button>
                 {% endif %}

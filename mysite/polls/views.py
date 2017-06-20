@@ -11,7 +11,7 @@ import shlex
 import random
 
 
-def translation(request, user_trans, source, source_lang, source_type, source_to):
+def translation(request, user_trans, source, source_lang, source_to):
     command = shlex.split('/usr/bin/perl multi-bleu.perl reference')
     user_in = 'reference'
     engine_in = 'mt-output'
@@ -24,14 +24,15 @@ def translation(request, user_trans, source, source_lang, source_type, source_to
     user_target.close()
 
     if source_lang == 'en' and source_to == 'zh':
-        engines = ['google', 'baidu', 'youdao', 'bing', 'atman']
+        engines = ['google', 'baidu', 'youdao', 'bing',
+                   ['atman', 'political'], ['atman', 'technology'], ['atman', 'medical']]
     else:
         engines = ['google', 'baidu', 'youdao', 'bing']
 
     if TransSource.objects.filter(
             trans_source=source,
             trans_source_lang=source_lang,
-            trans_source_type=source_type,
+            # trans_source_type=source_type,
             trans_output_lang=source_to
     ).exists():
         searched = True
@@ -40,21 +41,31 @@ def translation(request, user_trans, source, source_lang, source_type, source_to
 
     temp, created = TransSource.objects.get_or_create(trans_source=source,
                                                       trans_source_lang=source_lang,
-                                                      trans_source_type=source_type,
+                                                      # trans_source_type=source_type,
                                                       trans_output_lang=source_to)
     current_trans_list = []
     out_score = []
     random.shuffle(engines)
     for engine in engines:
-        send = {
-            'type': engine,
-            'from': source_lang,
-            'to': source_to,
-            'q': [{'id': 1, 'text': source}],
-            'extra': {
-                'domain': source_type,
+        if len(engine) is 2:
+            send = {
+                'type': engine[0],
+                'from': source_lang,
+                'to': source_to,
+                'q': [{'id': 1, 'text': source}],
+                'extra': {
+                    'domain': engine[1],
+                }
             }
-        }
+            engine = engine[0] + " : " + engine[1]
+        else:
+            send = {
+                'type': engine,
+                'from': source_lang,
+                'to': source_to,
+                'q': [{'id': 1, 'text': source}]
+            }
+
         host = "http://translate.atman360.com/third_translate"
         headers = {
             'content-type': 'application/json;charset=utf-8',
@@ -74,13 +85,13 @@ def translation(request, user_trans, source, source_lang, source_type, source_to
             if not user_trans == "":
                 user = True
                 with open(engine_in, 'r') as input_file:
-
                     score = subprocess.check_output(command, stdin=input_file)
                     out_score.append(score)
             else:
                 user = False
 
             if searched:
+
                 result_each = TransResult.objects.filter(trans_source=temp,
                                                          trans_engine=engine)[0]
                 if not TransHistory.objects.filter(trans_result=result_each,
@@ -96,6 +107,7 @@ def translation(request, user_trans, source, source_lang, source_type, source_to
                         User.objects.create(trans_his=his,
                                             score=score,
                                             user_trans=user_trans)
+                        his.bogus_score = score
                 else:
                     pre_his = TransHistory.objects.filter(trans_result=result_each,
                                                           trans_content=data)[0]
@@ -104,6 +116,7 @@ def translation(request, user_trans, source, source_lang, source_type, source_to
                         User.objects.create(trans_his=pre_his,
                                             score=score,
                                             user_trans=user_trans)
+                        pre_his.bogus_score = score
             else:
                 new_result = TransResult.objects.create(trans_source=temp,
                                                         trans_engine=engine)
@@ -116,6 +129,7 @@ def translation(request, user_trans, source, source_lang, source_type, source_to
                     User.objects.create(trans_his=new_his,
                                         score=score,
                                         user_trans=user_trans)
+                    new_his.bogus_score = score
 
         else:
             messages.add_message(request, messages.ERROR, resp['errorMessage'] + " from " + engine)
@@ -128,7 +142,7 @@ def translation(request, user_trans, source, source_lang, source_type, source_to
         'current_trans_list': current_trans_list,
         'not_empty': not_empty,
         'searched': searched,
-        'source_type': source_type,
+        # 'source_type': source_type,
         'out_score': out_score
     }
     return context
@@ -142,10 +156,10 @@ def homepage(request):
         user_trans = request.POST['userTrans']
         source = request.POST['q'].strip()
         source_lang = request.POST['lang']
-        source_type = request.POST['type']
+        # source_type = request.POST['type']
         source_to = request.POST['to']
 
-        context = translation(request, user_trans, source, source_lang, source_type, source_to)
+        context = translation(request, user_trans, source, source_lang, source_to)
         return render(request, 'polls/trans_results.html', context)
     else:
         return render(request, 'polls/homepage.html')
@@ -172,7 +186,8 @@ def result(request, voteresult_id):
     except KeyError:
 
         return render(request, 'polls/result.html', {'all_trans_result': all_trans_result,
-                                                     'source': source.trans_source, 'not_submitted': True})
+                                                     'source': source.trans_source, 'id': voteresult_id,
+                                                     'not_submitted': True})
     else:
         selected_trans.comment_set.create(
             comment=comment,
@@ -181,6 +196,7 @@ def result(request, voteresult_id):
         messages.add_message(request, messages.SUCCESS, "successfully saved your comment!")
         return render(request, 'polls/result.html', {'all_trans_result': all_trans_result,
                                                      'source': source.trans_source,
+                                                     'id': voteresult_id,
                                                      'not_submitted': False})
 
 

@@ -39,7 +39,7 @@
                     <div class="form-group">
                         <textarea maxlength="3000" type="text" name="userTrans" class="form-control" rows="3"
                                   cols="20" id="user_trans"
-                                  placeholder="输入您认为合适的翻译，例如：什么是jquery?"></textarea>
+                                  placeholder="输入对照的翻译用于计算BLEU值（Optional）。例如：什么是jquery?"></textarea>
                         <i class="fa x fa-search onX"></i>
                     </div>
                     <button type="submit" class="btn btn-lg btn-primary" id="translate_button">翻译</button>
@@ -55,12 +55,12 @@
                             <option value="zh">中文</option>
                             <option value="en">英文</option>
                         </select>
-                        <label>类别：</label>
-                        <select class="selectpicker" name="type" value="loadSelection('type')" id="type">
-                            <option value="political">时政</option>
-                            <option value="technology">科技</option>
-                            <option value="medical">医疗</option>
-                        </select>
+                        <!-- <label>类别：</label> -->
+                        <!-- <select class="selectpicker" name="type" value="loadSelection('type')" id="type"> -->
+                        <!-- <option value="political">时政</option>
+                        <option value="technology">科技</option>
+                        <option value="medical">医疗</option>
+                    </select> -->
                     </div>
                 </form>
             </div>

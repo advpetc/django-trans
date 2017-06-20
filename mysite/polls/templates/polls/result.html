@@ -34,11 +34,7 @@
 
             {% for each in tran.transhistory_set.all %}
             <tr>
-                {% if tran.trans_engine == "atman" %}
-                <td>{{ tran.trans_engine }} : {{ tran.trans_source.trans_source_type }}</td>
-                {% else %}
                 <td>{{ tran.trans_engine }}</td>
-                {% endif %}
                 <td>{{ each.trans_content }}</td>
                 <td>{{ each.vote_result }}</td>
                 <td>{{ each.trans_time }}</td>
@@ -62,7 +58,8 @@
         {% endif %}
     </div>
     {% if not_submitted %}
-    <form id="comment_form" class="search-wraper" role="search" action="/{{ id }}/" method="POST">{% csrf_token %}
+    <form id="comment_form" class="search-wraper" role="search" action="/result/{{ id }}/" method="POST">{% csrf_token
+        %}
 
         <div class="form-group">
                 <textarea id="comment_area" maxlength="3000" type="text" name="comment" class="form-control" rows=5

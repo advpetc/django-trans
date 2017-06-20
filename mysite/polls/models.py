@@ -6,7 +6,7 @@ from django.db import models
 class TransSource(models.Model):
     trans_source = models.TextField(null=True)
     trans_source_lang = models.CharField(max_length=2, null=True)
-    trans_source_type = models.CharField(max_length=2, null=True)
+    # trans_source_type = models.CharField(max_length=2, null=True)
     trans_output_lang = models.CharField(max_length=2, null=True)
 
     def __str__(self):

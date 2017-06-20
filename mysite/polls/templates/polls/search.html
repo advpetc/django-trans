@@ -107,11 +107,18 @@
         });
         $('.col-md-10').on("click", ".next_page", function(event) {
             event.preventDefault();
-            console.log('next page');
 
             curr_page += 1;
             change_page(curr_page);
         });
+
+        $('.col-md-10').on("click", ".first_page", function(event) {
+            event.preventDefault();
+
+            curr_page = 0;
+            change_page(curr_page);
+        });
+
 
         function change_page(page){
             $.ajax({
