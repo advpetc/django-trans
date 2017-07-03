@@ -1,0 +1,63 @@
+<div class="container">
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li
+                {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+
+    {% if not_empty %}
+    <button class="btn btn-default" type="button" name="button" id="btnHide">显示／隐藏翻译Engines</button>
+    <a href="result/{{ current_trans_list.0.id }}/">直接查看结果</a>
+    <table class="table">
+        {% if searched %}
+        <div class="alert alert-warning">您输入的语句之前已经被翻译</div>
+        {% else %}
+        <div class="alert alert-success">您输入的语句之前没有人搜索过</div>
+        {% endif %}
+        <thead>
+        <tr>
+            <th>翻译结果</th>
+            <th>Engine</th>
+            <th>Vote</th>
+            <th>Score</th>
+        </tr>
+        <tbody>
+        {% for tran in current_trans_list %}
+        <tr>
+            <td>{{ tran.trans_content }}</td>
+            <td>{{ tran.trans_result.trans_engine }}</td>
+            <td><a href="/polls/{{ tran.id }}/">选择</a>
+            <td>{{tran.bogus_score}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        </thead>
+    </table>
+    {% else %}
+    <p class="navbar-text">投票选项不可用</p>
+    {% endif %}
+</div>
+<script type="text/javascript">
+// var flag = true;
+$(document).ready(function() {
+    $('td:nth-child(2),th:nth-child(2)').hide();
+    var flag = true;
+        $('#btnHide').click(function() {
+            // $('td:nth-child(2)').hide();
+            // if your table has header(th), use this
+            if (flag) {
+                $('td:nth-child(2),th:nth-child(2)').show();
+                flag = false;
+            } else{
+                $('td:nth-child(2),th:nth-child(2)').hide();
+                flag = true;
+            }
+        });
+    });
+
+</script>

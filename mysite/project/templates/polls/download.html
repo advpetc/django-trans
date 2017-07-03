@@ -1,0 +1,153 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Download</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="panel panel-default col-md-8">
+    <div class="panel-heading">批量生成BLEU分数</div>
+    <div class="panel-body">
+        <p><strong>上传文本类型为txt格式，请将每句各行显示，例如：</strong>
+            <br>hello
+            <br>right
+            <br>...
+        </p>
+        <p><strong>上传的文本为两类：需要翻译的原句，用户提供的翻译，请在上传前选择翻译的源语言和目标语言</strong></p>
+        <form method="post" enctype="multipart/form-data" id='upload_form'>
+            {% csrf_token %}
+            <div class="row">
+                <label>原句文件</label>
+                <input id="source_file" type="file" name="source_file" accept=".txt" required>
+                <label>用户翻译文件</label>
+                <input id="user_file" type="file" name="user_file" accept=".txt" required>
+                <label>源语言：</label>
+                <select class="selectpicker" name="lang" value="loadSelection('lang')" id="lang">
+                    <option value="en">英文</option>
+                    <option value="zh">中文</option>
+                </select>
+                <label>目标语言：</label>
+                <select class="selectpicker" name="to" value="loadSelection('to')" id="to">
+                    <option value="zh">中文</option>
+                    <option value="en">英文</option>
+                </select>
+                <button class="btn btn-primary pull-right" type="submit">Submit your files</button>
+                <br><label>类别：</label>
+                <div class="checkbox">
+                    <label>
+                        <input id="tech" type="checkbox" name="technology" checked="checked">
+                        科技
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input id="med" type="checkbox" name="medical" checked="checked">
+                        医疗
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        <input id="pol" type="checkbox" name="political" checked="checked">
+                        政治
+                    </label>
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <div id="loadingdiv">{% load static %}
+        <img src="{% static 'ajax-loader.gif' %}" class="img-responsive center-block">
+        <p class="text-center">Analyzing...</p>
+    </div>
+
+    <div id="download_list">
+
+    </div>
+</div>
+
+<a href="/polls/" class="pull-right">Go back transvote</a>
+</body>
+<script type="text/javascript">
+        function loadSelection(target) {
+            var list = document.getElementById(target);
+            var index = list.selectedIndex;
+            return select = list[index].text;
+        }
+
+</script>
+<script type="text/javascript">
+    $('#upload_form').on('submit', function(event){
+        event.preventDefault();
+        console.log('submit');
+        // send_files();
+        var this_master = $(this);
+
+        this_master.find('input[type="checkbox"]').each( function () {
+            var checkbox_this = $(this);
+
+
+            if( checkbox_this.is(":checked") == true ) {
+                checkbox_this.attr('value','1');
+            } else {
+                // checkbox_this.prop('checked',true);
+                //DONT' ITS JUST CHECK THE CHECKBOX TO SUBMIT FORM DATA
+                checkbox_this.attr('value','0');
+            }
+        })
+
+
+        var formData = new FormData();
+        formData.append('source_file', $('#source_file')[0].files[0]);
+        formData.append('user_file', $('#user_file')[0].files[0]);
+        formData.append('lang', $('#lang').val());
+        formData.append('to', $('#to').val());
+        formData.append('tech', $('#tech').val());
+        formData.append('med', $('#med').val());
+        formData.append('pol', $('#pol').val());
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        send_files(formData);
+    });
+    function send_files(formData) {
+        $.ajax({
+            url: "/polls/download/",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: formData,
+            success: function(data) {
+                $('#download_list').html(data)
+            }
+        })
+    }
+
+
+</script>
+
+<script>
+    var $loading = $('#loadingdiv').hide();
+    $(document)
+        .ajaxStart(function(){
+            $loading.show();
+        })
+        .ajaxStop(function(){
+            $loading.hide();
+        })
+    ;
+
+</script>
+</html>

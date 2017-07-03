@@ -1,0 +1,57 @@
+-------------------------------------javascript-----------------------------------------
+var taskApp = angular.module('taskApp', []);
+
+taskApp.controller('TaskController', function TaskController($scope) {
+  $scope.data = data;
+});
+
+function getCheckboxValue(id) {
+       var checkbox = document.getElementById(id);
+       if (checkbox.checked) {
+           return "delete";
+      } else {
+          return "keep";
+     }
+}
+
+$(
+function() {
+   $("#submitbtn").click(function(){
+      
+      var result = [];
+      for(var i = 0; i < data.entities.length; i++) {
+         result.push(getCheckboxValue("result_" + i));
+      }
+     alert(result);
+     $("#result_id").val(JSON.stringify(result));
+  });
+}
+);
+
+----------------------------------------html---------------------------------------------
+
+<div ng-controller="TaskController"> 
+      <p>下面的Entity是属于“{{data.entityType}}”且正确翻译了吗？如果不是请选择删除。</p>
+       <table class="table table-bordered table-striped">
+      <thead>
+       <tr>
+          <th>源语言</th>
+          <th>翻译</th>
+          <th>删除</th>
+      </tr>
+     </thead>
+      <tbody>
+       <tr ng-repeat="entity in data.entities">
+          <td>{{entity.raw}}</td>
+          <td>{{entity.translation}}</td>
+          <td><input type="checkbox" value="delete" id="result_{{$index}}"></td>
+      </tr>
+     </tbody>
+     </table>
+     <input type="hidden" name="result" id="result_id">
+</div>
+
+--------------------------------------------test data--------------------------------------------------------
+{"entityType": "Good", "entities": [{"raw": "test", "translation":"测试"}, {"raw": "hello", "translation":"你好"}]}
+{"entityType": "Test", "entities": [{"raw": "world", "translation":"世界"}]}
+{"entityType": "Good", "entities": [{"raw": "test1", "translation":"测试1"}, {"raw": "hello1", "translation":"你好1"}, {"raw": "well", "translation":"很好"}]}

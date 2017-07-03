@@ -1,0 +1,77 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <title>Result Summary Page</title>
+
+        <!-- Bootstrap -->
+        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+            <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+
+        <div class="container" role="main">
+
+            <h2>Summary</h2>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Result</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ar in user_agg_result %}
+                    <tr>
+                        <td>{{ ar.user__name }}</td>
+                        <td>{{ ar.result }} </td>
+                        <td>{{ ar.result_count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <hr>
+            <!--<h2>Result list:</h2>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Data Id</th>
+                        <th>Result</th>
+                        <th>Comment</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in project_result %}
+                    <tr>
+                        <th>{{ item.user.name }}</th>
+                        <th>{{ item.data.id }} </th>
+                        <th>{{ item.result }}</th>
+                        <th>{{ item.comment }}</th>
+                        <th><a href="/project/{{ item.user.id }}/{{ item.data.id}}/details/">Details</a></th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <hr>-->
+            <div class="col-md-3 col-md-offset-9">
+                <a href="/project/" >Click here to project list.</a>
+            </div>
+        <div>
+    </body>
+</html>

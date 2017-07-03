@@ -1,0 +1,85 @@
+{% load static %}
+{% with data_count=project.source.data_set.count %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <title>Project: {{project.name}}</title>
+
+        <!-- Bootstrap -->
+        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+            <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+        <div class="container" role="main">
+            <p class="bg-warning">不支持微信客户端，请确保使用浏览器打开！</p>
+
+            <div class="page-header">
+                <h1>Project: {{project.name}}</h1>
+            </div>
+            <dl class="dl-horizontal">
+                <dt>Data name:</dt>
+                <dd>{{project.source.name}}</dd>
+
+                <dt>Data count:</dt>
+                <dd>{{data_count}}</dd>
+
+                <dt>Task view:</dt>
+                <dd>{{project.task_view.name}}</dd>
+
+                <dt>Result summary page:</dt>
+                <dd><a href="/project/{{project.id}}/result/">Click to view</a></dd>
+
+                <dt>Result details page:</dt>
+                <dd><a href="/project/{{project.id}}/result_details/?template_name={{project.result_details_view}}">Click to view</a></dd>
+
+                <dt>Project type:</dt>
+                <dd>{{project.project_type}}</dd>
+
+                {% if project.project_type == "DISTRIBUTE" %}
+                <dt>DISTRIBUTE number:</dt>
+                <dd>{{project.project_boundary}}</dd>
+                {% endif %}
+            </dl>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Finished Task</th>
+                        <th>Percent</th>
+                        <th>Url</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user_stat in users_stat %}
+                    <tr>
+                        <th>{{ user_stat.name }}</th>
+
+                        {% with finished=user_stat.finished %}
+                        <th>{{ finished }}</th>
+                        <th>{% widthratio finished data_count 100 %} %</th>
+                        {% endwith %}
+                        <th><a href="/project/{{project.id}}/{{user_stat.id}}/task/">Click</a></th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <hr>
+            <div class="col-md-3 col-md-offset-9">
+                <a href="/project/" >Click here to project list.</a>
+            </div>
+        <div>
+    </body>
+</html>
+
+{% endwith %}

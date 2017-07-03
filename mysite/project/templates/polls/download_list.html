@@ -1,0 +1,30 @@
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li
+            {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>翻译引擎</th>
+        <th>分数结果文件</th>
+        <th>翻译结果下载</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for each, value in download_links.items %}
+    <tr>
+        <td>{{each}}</td>
+        <td>{{value.0}}</td>
+        {% load static %}
+        <td>{% load static %}<a href="{% static value.1 %}" download>Link</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

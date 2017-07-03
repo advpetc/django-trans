@@ -1,0 +1,9 @@
+antonthedev叉segmentio /分析迅速antonthedev /
+http：/ /开发商。Tizen。org /…/网络应用/ web-app-running-b.…..
+2017年1月31日-大家好，我正在开发一个应用程序，它应该在屏幕关闭时在后台运行。我有...
+https://techcrunch.com/2011/02/23/chrome-background-apps/
+移动Web应用程序制作装置智能与capriza 2
+capriza 2或：我如何学会停止担忧和爱在后台运行一个移动Web应用程序。2016年1月18日Ori Harel。分享给脸谱网？
+https://www.iron.io/every-web-application-needs-background/
+webappbooster
+的好处是，webappbooster使功能丰富的Web应用程序…webappbooster运行在手机的后台服务。

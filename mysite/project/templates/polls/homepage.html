@@ -1,0 +1,265 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="homepage">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Translation Vote</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+
+</head>
+<body class="home-template">
+<header class="site-header">
+    <!--<nav class="navbar" id="top"></nav>-->
+    <div class="container jumbotron">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Translations Vote</h1>
+                <p><strong>输入翻译文字</strong>
+                </p>
+
+                <form class="search-wraper" role="search" method="POST" id="search_form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <textarea maxlength="3000" type="text" name="q" class="form-control" rows="3"
+                                  cols="20" id="q_search"
+                                  placeholder="搜索翻译文字，例如：what is jquery?" required></textarea>
+                        <i class="fa x fa-search onX"></i>
+                    </div>
+                    <div class="form-group">
+                        <textarea maxlength="3000" type="text" name="userTrans" class="form-control" rows="3"
+                                  cols="20" id="user_trans"
+                                  placeholder="输入对照的翻译用于计算BLEU值（Optional）。例如：什么是jquery?"></textarea>
+                        <i class="fa x fa-search onX"></i>
+                    </div>
+                    <button type="submit" class="btn btn-lg btn-primary" id="translate_button">翻译</button>
+                    <a href="search/" class="btn btn-lg btn-default">搜索数据库</a>
+                    <a href="/" class="btn btn-lg btn-success">回到主界面</a>
+
+                    <!-- <textarea id= rows="8" cols="80"></textarea> -->
+                    <div class="pull-right">
+                        <label>源语言：</label>
+                        <select class="selectpicker" name="lang" value="loadSelection('lang')" id="lang">
+                            <option value="en">英文</option>
+                            <option value="zh">中文</option>
+                        </select>
+                        <label>目标语言：</label>
+                        <select class="selectpicker" name="to" value="loadSelection('to')" id="to">
+                            <option value="zh">中文</option>
+                            <option value="en">英文</option>
+                        </select>
+                        <!-- <label>类别：</label> -->
+                        <!-- <select class="selectpicker" name="type" value="loadSelection('type')" id="type"> -->
+                        <!-- <option value="political">时政</option>
+                        <option value="technology">科技</option>
+                        <option value="medical">医疗</option>
+                    </select> -->
+
+                        <br><label>类别：</label>
+                        <div class="checkbox">
+                            <label>
+                                <input id="tech" type="checkbox" name="technology" checked="checked">
+                                科技
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="med" type="checkbox" name="medical" checked="checked">
+                                医疗
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input id="pol" type="checkbox" name="political" checked="checked">
+                                政治
+                            </label>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="mostused-keywords well well-sm text-center hidden-xs hidden-sm">
+        <ul class="list-inline">
+            <li>选择你认为最好的翻译，点击"选择"按钮进行选择</li>
+        </ul>
+        <a href="/polls/download">批量生成BLEU score</a>
+    </div>
+</header>
+<div id="loadingdiv">{% load static %}
+    <img src="{% static 'ajax-loader.gif' %}" class="img-responsive center-block">
+    <p class="text-center">Translating...</p>
+</div>
+<main id="list_results">
+
+</main>
+
+<a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top pull-right" role="button" data-toggle="tooltip"
+   data-placement="right"><span class="glyphicon glyphicon-chevron-up"></span></a>
+
+
+<script type="text/javascript">
+        var _hmt = _hmt || [];
+
+</script>
+<script type="text/javascript">
+        function loadSelection(target) {
+            var list = document.getElementById(target);
+            var index = list.selectedIndex;
+            return select = list[index].text;
+        }
+
+</script>
+<script>
+        $(document).ready(function(){
+            $(window).scroll(function () {
+            if ($(this).scrollTop() > 50) {
+                $('#back-to-top').fadeIn();
+            } else {
+                $('#back-to-top').fadeOut();
+            }
+
+
+
+        });
+        // scroll body to 0px on click
+        $('#back-to-top').click(function () {
+            $('#back-to-top').tooltip('hide');
+            $('body,html').animate({
+                scrollTop: 0
+            }, 800);
+            return false;
+        });
+
+        $('#back-to-top').tooltip('show');
+
+    });
+
+</script>
+
+<script type="text/javascript">
+        $('#search_form').on('submit', function(event){
+            event.preventDefault();
+            console.log('form submit')
+
+
+            var this_master = $(this);
+
+            this_master.find('input[type="checkbox"]').each( function () {
+                var checkbox_this = $(this);
+
+
+                if( checkbox_this.is(":checked") == true ) {
+                    checkbox_this.attr('value','1');
+                } else {
+                    // checkbox_this.prop('checked',true);
+                    //DONT' ITS JUST CHECK THE CHECKBOX TO SUBMIT FORM DATA
+                    checkbox_this.attr('value','0');
+                }
+            })
+
+            // create_results();
+            // var formData = new FormData();
+            // if ($('#tech').is(':checked')) {
+            //     formData.append('technology', 'checked');
+            // }
+            // if ($('#med').is(':checked')) {
+            //     formData.append('medical', 'checked');
+            // }
+            // if ($('#pol').is(':checked')) {
+            //     formData.append('political', 'checked');
+            // }
+            // formData.append('userTrans', $('#user_trans').val());
+            // formData.append('q', $('#q_search').val());
+            // formData.append('lang', $('#lang').val());
+            // formData.append('type', $('#type').val());
+            // formData.append('to', $('#to').val());
+            // formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            create_results();
+        });
+        function create_results(){
+            $.ajax({
+                url: "/polls/",
+                type: "POST",
+                // contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                // processData: false,
+                data:{
+                        'userTrans': $('#user_trans').val(),
+                        'q': $('#q_search').val(),
+                        'lang': $('#lang').val(),
+                        'type': $('#type').val(),
+                        'to': $('#to').val(),
+                        'technology': $('#tech').val(),
+                        'medical': $('#med').val(),
+                        'political': $('#pol').val(),
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                // contentType: false,
+                // processData: true,
+                success: function(data) {
+                    $('#list_results').html(data)
+                    // var holder = "null";
+                    // if ($('#user_trans').val()) {
+                    //     holder = $('#user_trans').val();
+                    // }
+                    // var url = $('#q_search').val()
+                    // + "/" + holder + "/" +
+                    // $('#lang').val() + "/" + $('#type').val()
+                    // + "/" + $('#to').val();
+                    // window.history.replaceState({page: 1}, null, url);
+                    // window.history.go(-1);
+                }
+
+            });
+        }
+
+</script>
+
+<script>
+    var $loading = $('#loadingdiv').hide();
+    $(document)
+        .ajaxStart(function(){
+            $loading.show();
+        })
+        .ajaxStop(function(){
+            $loading.hide();
+        })
+    ;
+
+</script>
+<!-- <script type="text/javascript">
+$("form").submit(function () {
+
+var this_master = $(this);
+
+this_master.find('input[type="checkbox"]').each( function () {
+    var checkbox_this = $(this);
+
+
+    if( checkbox_this.is(":checked") == true ) {
+        checkbox_this.attr('value','1');
+    } else {
+        // checkbox_this.prop('checked',true);
+        //DONT' ITS JUST CHECK THE CHECKBOX TO SUBMIT FORM DATA
+        checkbox_this.attr('value','0');
+    }
+})
+})
+</script> -->
+
+
+</body>
+</html>

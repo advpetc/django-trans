@@ -1,0 +1,41 @@
+Atman VS Google
+
+----------------------------javascript start---------------------------------------------------------
+
+var taskApp = angular.module('taskApp', []);
+var randValue = Math.random();
+
+taskApp.controller('TaskController', function TaskController($scope) {
+  if(randValue >= 0.5) {
+       $scope.data = {"en":data["en"], values: [{"text":data["atman"], "value": "atman"}, {"text":data["google"], "value": "google"}]}
+  }
+  else {
+       $scope.data = {"en":data["en"], values: [{"text":data["google"], "value": "google"}, {"text":data["atman"], "value": "atman"}]}
+  }
+  
+});
+----------------------------javascript end-----------------------------------------------------------
+
+----------------------------html start---------------------------------------------------------------
+<div ng-controller="TaskController"> 
+      <p>{{ data.en }}</p>
+      <p>Which translation is better? </p>
+       <p>
+           <input type="radio" value="{{data.values[0].value}}" name="result">
+           {{ data.values[0].text }}
+       </p>
+       <p>
+           <input type="radio" value="{{data.values[1].value}}" name="result">
+           {{ data.values[1].text }}
+       </p>
+       <p>
+           <input type="radio" value="same" name="result">
+           They are the same.
+       </p>
+</div>
+---------------------------html end------------------------------------------------------------------
+
+---------------------------example data start--------------------------------------------------------
+{"en": "An eczematous eruption involving the hands, feet, nose, and ears is characteristic of Bazex's syndrome.", "atman": "\u6d89\u53ca\u624b \uff0c \u811a \uff0c \u9f3b\u548c\u8033\u6735\u7684\u6e7f\u75b9\u75b9\u662f bazex \u7efc\u5408\u5f81\u7684\u7279\u5f81\u3002", "google": "\u6d89\u53ca\u624b\uff0c\u811a\uff0c\u9f3b\u5b50\u548c\u8033\u6735\u7684\u6e7f\u75b9\u6027\u7206\u53d1\u662fBazex\u7efc\u5408\u5f81\u7684\u7279\u5f81\u3002"}
+{"en": "By comparison, hospitalization rates among patients younger than 4 years inother recent seasons have ranged from 35.5 to 72.8 per 100,000, while rates forthose older than 65 ranged from 13.5 to 65.9 per 100,000.", "atman": "\u76f8\u6bd4\u4e4b\u4e0b \uff0c 4 \u5c81\u4ee5\u4e0b\u7684\u6700\u8fd1\u5b63\u8282\u60a3\u8005\u7684\u4f4f\u9662\u7387\u5728 35.5 \u81f3 72.8 / 100,000 \u4e4b\u95f4 \uff0c \u800c 65 \u5c81\u4ee5\u4e0a\u7684\u60a3\u8005\u7684\u4f4f\u9662\u7387\u5728 13.5 \u81f3 65.9 / 100,000 \u4e4b\u95f4\u3002", "google": "\u76f8\u6bd4\u4e4b\u4e0b\uff0c\u5728\u6700\u8fd1\u51e0\u4e2a\u5b63\u8282\uff0c\u5e74\u9f84\u5c0f\u4e8e4\u5c81\u7684\u60a3\u8005\u7684\u4f4f\u9662\u7387\u4ece\u6bcf10\u4e07\u4eba35.5\u81f372.8\u4eba\u4e0d\u7b49\uff0c\u800c65\u5c81\u4ee5\u4e0a\u7684\u4eba\u7684\u4f4f\u9662\u7387\u4e3a\u6bcf100,000\u4eba13.5\u81f365.9\u4eba\u3002"}
+---------------------------example data end----------------------------------------------------------

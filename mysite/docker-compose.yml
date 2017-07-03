@@ -1,0 +1,33 @@
+version: '2'
+services:
+    uhrs:
+        image: atman/uhrs
+        restart: always
+        volumes:
+         - /home/lmatt/Documents/Atman/CommonTools/UHRS/web/UHRS/:/atman/
+        ports:
+         - "8000:8000"
+    sqlite3_db:
+        image: sqlite3
+    postgresql_db:
+        image: postgres
+        environment:
+          POSTGRES_PASSWORD: ZAQxsw12345
+    web_remote:
+        build: .
+        command: python manage.py runserver 0.0.0.0:8000
+        volumes:
+         - .:/atman/
+        ports:
+         - "8000:8000"
+        depends_on:
+         - postgresql_db
+    web_local:
+        build: .
+        command: python manage.py runserver 0.0.0.0:8000
+        volumes:
+         - .:/atman/
+        ports:
+         - "8000:8000"
+        depends_on:
+         - sqlite3_db

@@ -1,0 +1,9 @@
+AntonTheDev forked segtico / analytics - swift to AntonTheDev /
+https://developer.tizen.org/.../web-application.../web-app-running-b..。
+2017年1月31日-你好，我正在开发一款应用程序，它应该在屏幕关闭的背景下运行。
+https://techcrunch.com/2011/02/23/chrome-background-apps/
+移动Web应用程序——使设备更聪明地与摩羯2.0
+或者:我是如何学会不再担心和喜欢在后台运行移动网络应用程序的。 2016年1月18日，由Ori Harel。 Facebook呢?
+https://www.iron.io/every-web-application-needs-background/
+WebAppBooster
+好处是webapp助推通过启用功能来丰富web应用程序。 webapp助推在你的智能手机的背景下运行一个服务。
